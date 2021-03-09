@@ -1,0 +1,15 @@
+{% extends "hoosactive/base.html" %}
+{% block content %}
+
+<div style="height: 100%; text-align: center; margin-top: 100px;">
+  {% if user.is_authenticated %}
+  <h1><u><b>USER PROFILE</b></u></h1>
+  <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+  <p>Email: {{ user.email }}</p>
+  <a href="{% url 'hoosactive:index' %}">Back to Homepage</a>
+  <br>
+  <a href="{% url 'account_logout' %}">Sign Out</a>
+  {% endif %}
+</div>
+
+{% endblock %}

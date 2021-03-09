@@ -18,6 +18,23 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 </head>
 
+<nav class="b12-navbar">
+  <div style="width: 150px; float: left; text-align: center; margin: 13px 0;">
+    <a style="color: white;" href="{% url 'hoosactive:index' %}">HoosActive</a>
+  </div>
+  <div style="width: 200px; float: right; text-align: center;">
+    {% if user.is_authenticated %}
+    <a style="padding: 13px 0; width: 100px; display: inline-block;" href="{% url 'hoosactive:profile' %}">
+      Profile
+    </a><a style="padding: 13px 0; width: 50%; display: inline-block;" href="{% url 'account_logout' %}">
+      Sign Out
+    </a>
+    {% else %}
+    <a style="padding: 13px 0; width: 100%; display: inline-block;" href="{% url 'hoosactive:login' %}">Register/Sign In</a>
+    {% endif %}
+  </div>
+</nav>
+
 {% block content%}{% endblock %}
 
 <footer></footer>
