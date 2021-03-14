@@ -1,0 +1,14 @@
+language: python
+python:
+- '3.8'
+install:
+- pip install -r requirements-travis.txt
+script:
+- python manage.py test
+deploy:
+  provider: heroku
+  api_key:
+    secure: Xq+PaOqXDeXPteYGseQ3vCs89cecguCLBtjRmYa+qFObSGc8hhSjfM66izn4pAwtpDrfu3caEhwgrLMlUWyZD+SxbFIcl0TlFjQ5+nKALxWw52wEGne312mGRueVUbIHvxg8d3zZP4HJt8gVO8Y4bmVefdrOcIhqm29bDec2KqA59AyZq0To1HqADT8OPLi0HzAwig6NE4oagcfyR0TxYpSsv7kR/IbXZxy0QMl6Pzpt8DoHQUJZgmly3LUowyaq+CUSeByNyueBlefvnAr8uyPO3K8QKPIPdBb3RQGSvKeeOa1K1kS6Wl/MiU6ihqowDWGtDWSz6jnlAOYBytJuXM7ZVMxqg3fh2zhlRfCeDup1cALjApN9EaT43e/XIBBoqWA12PhocJdSiNcH/vMFI4uu59FoOU3Zjblr13O7e2+KLF1bLl25JdsJP6IjYwF27CRs0mDY/0QogHbaPIIwvKt/Q9ezSW6vsTk1mGHo77TjXdGuiq3xR0MF46TBjIgAig+RTMIoEuAsRdZIkexIZHeGLdFSTAH+g5arIpA0/7WF0GBd1imlDbsWqHBlAdsKXkpdtrT1KKpEHZHnq9vzdy797jaai/oxyC09Zsgb7/0KVGi0LQL2ptMXo9BgTSdB8DASu9+nuhqw6+XHQIY9QfPSPXXwQN4S1UjG8gUMNF0=
+  app: hoos-active
+  on:
+    repo: uva-cs3240-s21/project-b-12
