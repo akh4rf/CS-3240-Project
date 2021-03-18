@@ -7,8 +7,6 @@
   <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
   <p>Email: {{ user.email }}</p>
   <a href="{% url 'hoosactive:index' %}">Back to Homepage</a>
-  <br>
-  <a href="{% url 'account_logout' %}">Sign Out</a>
   {% endif %}
 </div>
 
