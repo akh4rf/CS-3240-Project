@@ -147,6 +147,8 @@ SOCIALACCOUNT_AUTO_SIGNUP = False
 SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
 
+
+
 # Activate Django-Heroku.
 try:
     # Configure Django App for Heroku.
@@ -154,3 +156,4 @@ try:
     django_heroku.settings(locals())
 except ImportError:
     found = False
+
