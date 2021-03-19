@@ -3,7 +3,8 @@
 
 {% load socialaccount %}
   <div style="height: 100%; text-align: center; margin-top: 100px;">
-  <h1>HoosActive Login</h1>
+  <!-- <h1>HoosActive Login</h1> -->
+  <img style="width:300px;" src="{% static 'hoosactive/images/hoosactive_login.png' %}">
   {% if user.is_authenticated %}
   <p>Welcome, {{ user.username }}!</p>
 
