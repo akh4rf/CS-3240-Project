@@ -5,7 +5,6 @@
 <div style="height: 100%; text-align: center; margin-top: 100px;">
   {% if user.is_authenticated %}
   <br></br>
-  <!-- <h1><u><b>USER PROFILE</b></u></h1> -->
   <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
   <p style="font-size:30px;color:rgb(72,72,72);">{{ user.first_name }} {{ user.last_name }}</p>
   <p style="font-size:20px;color:gray;">{{ user.email }}</p>
