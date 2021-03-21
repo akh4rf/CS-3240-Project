@@ -1,14 +1,14 @@
 {% extends "hoosactive/base.html" %}
 {% block content %}
+{% load static %}
 
 <div style="height: 100%; text-align: center; margin-top: 100px;">
   {% if user.is_authenticated %}
-  <h1><u><b>USER PROFILE</b></u></h1>
-  <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
-  <p>Email: {{ user.email }}</p>
-  <a href="{% url 'hoosactive:index' %}">Back to Homepage</a>
-  <br>
-  <a href="{% url 'account_logout' %}">Sign Out</a>
+  <br></br>
+  <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
+  <p style="font-size:30px;color:rgb(72,72,72);">{{ user.first_name }} {{ user.last_name }}</p>
+  <p style="font-size:20px;color:gray;">{{ user.email }}</p>
+  <!-- <a href="{% url 'hoosactive:index' %}">Back to Homepage</a> -->
   {% endif %}
 </div>
 

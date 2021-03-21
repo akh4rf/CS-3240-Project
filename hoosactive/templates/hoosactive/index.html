@@ -1,10 +1,18 @@
 {% extends "hoosactive/base.html" %}
 {% block content %}
+{% load static %}
 
-<div style="display: flex; height: 667px; align-items: center; justify-content: center;">
-  <div style="font-size: 50px; width: 500px; text-align: center;">
-    HOMEPAGE CONTENT
-  </div>
+
+<div style="position: relative;" class="">
+  <div style="position: absolute;" class = "triangle-up rectangle"></div>
+  <img style="position: absolute; right: 0;" src="{% static 'hoosactive/images/trophies.png' %}" alt="">
+  {% if user.is_authenticated %}
+  <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Welcome, {{ user.first_name }}!</div>
+  {% else %}
+  <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Sign up today to see who's active!</div>
+  <a style="position: absolute; margin: 300px 25px 0px 100px;" class="btn btn-secondary" href="{% url 'hoosactive:login' %}">SIGN UP FOR HOOSACTIVE</a>
+  {% endif %}
 </div>
+
 
 {% endblock %}

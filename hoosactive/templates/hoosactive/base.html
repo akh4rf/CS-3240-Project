@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>HoosActive</title>
   {% load static %}
+  <link rel="shortcut icon" type="image/png" href="{% static 'hoosactive/images/ha.png' %}"/>
+  <title>HoosActive</title>
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <!-- Bootstap icons -->
@@ -18,19 +19,21 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 </head>
 
-<nav class="b12-navbar">
-  <div style="width: 150px; float: left; text-align: center; margin: 13px 0;">
-    <a style="color: white;" href="{% url 'hoosactive:index' %}">HoosActive</a>
-  </div>
-  <div style="width: 200px; float: right; text-align: center;">
+<nav class="navbar navbar-light" style="background-color: #1E355D;">
+  <a style="" href="{% url 'hoosactive:index' %}">
+    <div style="position: relative; float: left; height: 60px; width: calc(100px*16/9); margin-left: 25px;">
+        <img style="max-width:100%; max-height:100%;" src="{% static 'hoosactive/images/hoosactive_logo.png' %}" alt="">
+    </div>
+  </a>
+  <div style="color: white; width: 300px; float: right; text-align: center; font-size: 20px; margin-right: 5px;">
     {% if user.is_authenticated %}
-    <a style="padding: 13px 0; width: 100px; display: inline-block;" href="{% url 'hoosactive:profile' %}">
+    <a style="text-decoration: none; padding: 23px 0; width: 50%; display: inline-block;" href="{% url 'hoosactive:profile' %}">
       Profile
-    </a><a style="padding: 13px 0; width: 50%; display: inline-block;" href="{% url 'account_logout' %}">
+    </a><a style="text-decoration: none; padding: 23px 0; width: 50%; display: inline-block;" href="{% url 'account_logout' %}">
       Sign Out
     </a>
     {% else %}
-    <a style="padding: 13px 0; width: 100%; display: inline-block;" href="{% url 'hoosactive:login' %}">Register/Sign In</a>
+    <a style="text-decoration: none; padding: 0px 0; height: 20px ; width: 100%; display: inline-block;" href="{% url 'hoosactive:login' %}">Register/Sign In</a>
     {% endif %}
   </div>
 </nav>

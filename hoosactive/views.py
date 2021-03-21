@@ -7,8 +7,10 @@ from django.utils import timezone
 def index(request):
     return render(request, 'hoosactive/index.html', {})
 
+
 def login(request):
     return render(request, 'hoosactive/login.html', {})
 
 def profile(request):
     return render(request, 'hoosactive/profile.html', {})
+
