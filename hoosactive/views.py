@@ -4,7 +4,8 @@ from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
 from .forms import CreateUserForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, logout
+from django.contrib.auth import login as auth_login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views import generic
@@ -43,8 +44,8 @@ def login(request):
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
-                login(request, user)
-                return redirect('home')
+                auth_login(request, user)
+                return redirect('hoosactive:index')
             else:
                 messages.info(request, 'Username OR password is incorrect')
 
