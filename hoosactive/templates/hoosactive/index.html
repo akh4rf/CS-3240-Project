@@ -9,7 +9,7 @@
   {% if user.is_authenticated %}
   <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Welcome, {{ user.first_name }}!</div>
   {% else %}
-  <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Sign up today to see who's active!</div>
+  <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Sign up today to see Hoos Active!</div>
   <a style="position: absolute; margin: 300px 25px 0px 100px;" class="btn btn-secondary" href="{% url 'hoosactive:login' %}">SIGN UP FOR HOOSACTIVE</a>
   {% endif %}
 </div>
