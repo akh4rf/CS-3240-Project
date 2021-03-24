@@ -2,12 +2,52 @@
 {% block content %}
 {% load static %}
 
-
-<div style="position: relative;" class="">
+<div class="">
   <div style="position: absolute;" class = "triangle-up rectangle"></div>
   <img style="position: absolute; right: 0;" src="{% static 'hoosactive/images/trophies.png' %}" alt="">
   {% if user.is_authenticated %}
-  <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Welcome, {{ user.first_name }}!</div>
+  <div class="col-6 mx-5 text-white h1">Welcome, {{ user.first_name }}!</div>
+  <!-- Button meant to direct to adding exercise. -->
+  <a style="font-size: 25px;" class="bi bi-plus-circle col-7 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold" href=""> ADD EXERCISE </a>
+  <!-- Button meant to direct to workout scheduler. -->
+  <a style="font-size: 25px;" class="bi bi-calendar-date col-7 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" href=""> SCHEDULE WORKOUT </a>
+  <!-- This table is meant to have the user's 5 soonest upcoming scheduled workouts. If you click on one, you can edit it. -->
+  <table class="col-7 table table-dark table-hover m-3 mx-5">
+    <thead>
+      <tr>
+        <th scope="col">Upcoming Workout</th>
+        <th scope="col">Date</th>
+        <th scope="col">Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>4-mile Run</td>
+        <td>4/15/2021</td>
+        <td>9:00AM</td>
+      </tr>
+      <tr>
+        <td>100 Push-Ups</td>
+        <td>4/20/2021</td>
+        <td>10:00AM</td>
+      </tr>
+      <tr>
+        <td>Bench Press</td>
+        <td>6/12/2021</td>
+        <td>8:00AM</td>
+      </tr>
+      <tr>
+        <td>10-mile Run</td>
+        <td>11/12/2021</td>
+        <td>7:30PM</td>
+      </tr>
+      <tr>
+        <td>Bench Press</td>
+        <td>12/25/2021</td>
+        <td>2:15PM</td>
+      </tr>
+    </tbody>
+  </table>
   {% else %}
   <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Sign up today to see Hoos Active!</div>
   <a style="position: absolute; margin: 300px 25px 0px 100px;" class="btn btn-secondary" href="{% url 'hoosactive:login' %}">SIGN UP FOR HOOSACTIVE</a>
