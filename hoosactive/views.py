@@ -55,4 +55,6 @@ def login(request):
 
 def profile(request):
     return render(request, 'hoosactive/profile.html', {})
+def leaderboard(request):
+    return render(request, 'hoosactive/leaderboard.html', {})
 
