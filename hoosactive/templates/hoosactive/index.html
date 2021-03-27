@@ -40,7 +40,27 @@
   </div>
 
   <!-- Button meant to direct to workout scheduler. -->
-  <button style="font-size: 25px;" class="bi bi-calendar-date col-7 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" href=""> SCHEDULE WORKOUT </button>
+  <button style="font-size: 25px;" class="bi bi-calendar-date col-7 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#ScheduleWorkoutModal"> SCHEDULE WORKOUT </button>
+  <!-- Modal -->
+  <div id="ScheduleWorkoutModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Schedule Workout</h5>
+        </div>
+        <div class="modal-body">
+          <input class="my-2 form-control" placeholder="Workout Name">
+          <input class="my-2 form-control" type="datetime-local">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- This table is meant to have the user's 5 soonest upcoming scheduled workouts. If you click on one, you can edit it. -->
   <table class="col-7 table table-dark table-hover m-3 mx-5">
     <thead>
