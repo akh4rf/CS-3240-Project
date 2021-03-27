@@ -32,16 +32,29 @@
     {% if user.is_authenticated %}
     <a style="text-decoration: none; padding: 23px 0; width: 50%; display: inline-block;" href="{% url 'hoosactive:profile' %}">
       Profile
-    </a><div style="text-decoration: none; padding: 23px 5px; width: 40%; display: inline-block;" class="dropdown">
-      <button style="background-color: transparent; border-color: transparent; font-size: 19px; padding: 0; margin-top: -6.5px;" class="btn btn-primary" data-toggle="dropdown">Sign Out</button>
-        <ul style="text-align: center;" class="dropdown-menu">
-          <form method="post" action="{% url 'account_logout' %}">
-            <p>Click to Confirm</p>
-            {% csrf_token %}
-            <button style="background-color: transparent;" class="rounded">{% trans 'Sign Out' %}</button>
-          </form>
-        </ul>
+    </a>
+    <!-- Sign Out with Modal confirmation. -->
+    <div style="text-decoration: none; padding: 23px 5px; width: 40%; display: inline-block;">
+      <button style="background-color: transparent; border-color: transparent; font-size: 19px; padding: 0; margin-top: -6.5px;" class="btn btn-primary" data-toggle="modal" data-target="#SignOutModal">Sign Out</button>
+      <!-- Modal -->
+      <div id="SignOutModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title text-dark text-left">Are you sure you want to sign out?</h3>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'account_logout' %}">
+                  {% csrf_token %}
+                  <button class="btn btn-primary">{% trans 'Sign Out' %}</button>
+                </form>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
     {% else %}
     <a style="text-decoration: none; padding: 0px 0; height: 20px ; width: 100%; display: inline-block;" href="{% url 'hoosactive:login' %}">Register/Sign In</a>
     {% endif %}
