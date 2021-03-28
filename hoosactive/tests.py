@@ -1,5 +1,10 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
+from hoosactive.models import Entry, Exercise
+from datetime import datetime
+from django.utils import timezone
+import pytz
+
 
 
 class LoginTest(TestCase):
@@ -56,3 +61,21 @@ class RegisterTest(TestCase):
         c = Client()
         response = c.post('/register/', {'username': 'testuser', 'email': 'wrong', 'password1': '!Password1', 'password2': '!Password1'})
         self.assertEquals(response.status_code, 200)
+
+
+class EntryTest(TestCase):
+
+    # Correctly Setup Entry
+    def test_entry(self):
+        User = get_user_model()
+        user = User.objects.create(username='testuser')
+        user.set_password('!Password1')
+        user.save()
+        Exercise.objects.create(name="Running", description="")
+        exercise = Exercise.objects.get(name="Running")
+        date = datetime.now()
+        local_date = pytz.utc.localize(date)
+        Entry.objects.create(user=user, exercise=exercise, date=local_date, cals_burned=1000, duration_hours=45)
+        entry = Entry.objects.get(user=user)
+        entry_string = entry.user.username + " " + entry.exercise.name + " Entry " + entry.date.strftime("%m/%d/%Y")
+        self.assertEquals(entry_string, "testuser Running Entry " + local_date.strftime("%m/%d/%Y"))
