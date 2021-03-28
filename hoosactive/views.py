@@ -11,9 +11,14 @@ from django.contrib.auth.decorators import login_required
 from django.views import generic
 from django.utils import timezone
 
-def index(request):
-    return render(request, 'hoosactive/index.html', {})
 
+class IndexView(generic.ListView):
+    model = Exercise
+    template_name = 'hoosactive/index.html'
+    context_object_name = 'exercise_list'
+
+    def get_queryset(self):
+        return Exercise.objects.all()
 
 def register(request):
     if request.user.is_authenticated:
@@ -57,4 +62,3 @@ def profile(request):
     return render(request, 'hoosactive/profile.html', {})
 def leaderboard(request):
     return render(request, 'hoosactive/leaderboard.html', {})
-
