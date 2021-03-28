@@ -54,6 +54,10 @@ class Profile(models.Model):
             self.exercises.add(exercise)
 
 
+class EntryManager(models.Manager):
+    def create_entry(self, us, ex, dt, cal, dur):
+        entry = self.create(user=us,exercise=ex,date=dt,cals_burned=cal,duration_hours=dur)
+        return entry
 
 class Entry(models.Model):
     # Foreign Key to related User
@@ -66,6 +70,8 @@ class Entry(models.Model):
     cals_burned = models.PositiveSmallIntegerField()
     # Duration of exercise
     duration_hours = models.DecimalField(decimal_places=2,max_digits=4)
+
+    objects = EntryManager()
 
 
 

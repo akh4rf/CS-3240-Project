@@ -20,6 +20,13 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return Exercise.objects.all()
 
+def log_exercise(request):
+    user = request.user
+    if request.method == 'POST':
+        exer = Exercise.objects.get(name=request.POST['drop'])
+        entry = Entry.objects.create_entry(user,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
+        return redirect('hoosactive:index')
+
 def register(request):
     if request.user.is_authenticated:
         return redirect('index')
