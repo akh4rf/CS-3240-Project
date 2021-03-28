@@ -12,13 +12,13 @@ from django.views import generic
 from django.utils import timezone
 
 
-class IndexView(generic.ListView):
-    model = Exercise
+class IndexView(generic.TemplateView):
     template_name = 'hoosactive/index.html'
-    context_object_name = 'exercise_list'
 
-    def get_queryset(self):
-        return Exercise.objects.all()
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['exercise_list'] = Exercise.objects.order_by('name')
+        return context
 
 def log_exercise(request):
     user = request.user
@@ -67,5 +67,20 @@ def login(request):
 
 def profile(request):
     return render(request, 'hoosactive/profile.html', {})
-def leaderboard(request):
-    return render(request, 'hoosactive/leaderboard.html', {})
+
+class LeaderboardView(generic.TemplateView):
+    template_name = 'hoosactive/leaderboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(LeaderboardView, self).get_context_data(**kwargs)
+        context['exercise_list'] = Exercise.objects.order_by('name')
+        return context
+
+def exercise_leaderboard(request, exercise_name):
+    exercise = get_object_or_404(Exercise, name=exercise_name)
+    entry_list = exercise.entry_set.all()
+    return render(request, 'hoosactive/leaderboard.html', {
+        'exercise_list': Exercise.objects.order_by('name'),
+        'exercise': exercise,
+        'entry_list': entry_list
+    })

@@ -7,37 +7,47 @@
     <div class="flex-container">
         <div class="flex-item-space" style="color:#EEEEEE">&nbsp;&nbsp;</div>
     </div>
-    <text style="font-size: 35px; padding-bottom: 100px; padding-top:100px; padding-left: 50px;">Leaderboard for</text>
+    {% if exercise %}
+    <text style="font-size: 35px; padding-bottom: 100px; padding-top:100px; padding-left: 50px;">Leaderboard for {{ exercise.name }}</text>
+    {% else %}
+    <text style="font-size: 35px; padding-bottom: 100px; padding-top:100px; padding-left: 50px;">Leaderboard</text>
+    {% endif %}
+
     <div class="dropdown" style="padding-left:50px;">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Select Leaderboard
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#">Exercise</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
+          {% for exercise in exercise_list %}
+          <a class="dropdown-item" href="/leaderboard/{{ exercise.name }}">{{ exercise.name }}</a>
+          {% endfor %}
         </div>
     </div>
-    <div class="flex-container" style="padding-top:100px;">
-        <div class="flex-item-sortby" style="color:white">Sort By</div>
-        <div class="flex-item-name" style="color:white">Name</div>
-        <div class="flex-item-location" style="color:white">Location</div>
-        <div class="flex-item-cal" style="color:white">Calories Burned</div>
+    <div class="" style="padding-top:100px; padding-bottom: 200px;">
+      <div class="flex-container">
+          <div class="flex-item-sortby" style="color:white">Sort By</div>
+          <div class="flex-item-name" style="color:white">Name</div>
+          <div class="flex-item-location" style="color:white">Location</div>
+          <div class="flex-item-cal" style="color:white">Calories Burned</div>
+      </div>
+      <div class="flex-container2">
+          <div class="flex-item-sort" style="color:black">
+            <form action="">
+              <input type="radio" id="male" name="gender" value="male">
+              <label for="male">option1</label><br>
+              <input type="radio" id="female" name="gender" value="female">
+              <label for="female">option2</label><br>
+              <input type="radio" id="other" name="gender" value="other">
+              <label for="other">option3</label>
+              <input type="submit" value="Sort">
+            </form>
+          </div>
+          <div class="flex-item-names" style="color:black">Jason Lee</div>
+          <div class="flex-item-locations" style="color:black">Charlottesville</div>
+          <div class="flex-item-cals" style="color:black">200</div>
+      </div>
     </div>
-    <div class="flex-container2">
-        <div class="flex-item-sort" style="color:black"><form action="/action_page.php">
-            <input type="radio" id="male" name="gender" value="male">
-            <label for="male">option1</label><br>
-            <input type="radio" id="female" name="gender" value="female">
-            <label for="female">option2</label><br>
-            <input type="radio" id="other" name="gender" value="other">
-            <label for="other">option3</label>
-            <input type="submit" value="Sort"></form>
-        </div>
-        <div class="flex-item-names" style="color:black">Jason Lee</div>
-        <div class="flex-item-locations" style="color:black">Charlottesville</div>
-        <div class="flex-item-cals" style="color:black">200</div>
-    </div>
+
 </div>
 
 {% endif %}
