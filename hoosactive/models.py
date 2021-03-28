@@ -44,6 +44,9 @@ class Profile(models.Model):
     # Toggles whether stats are shown or not
     show_stats = models.BooleanField(default = True)
 
+    def __str__(self):
+        return self.user.username + "'s Profile"
+
     # Model Methods
     def does_exercise(self, exercise_name):
         return (self.exercises.all().filter(name = exercise_name).count() > 0)
@@ -72,6 +75,9 @@ class Entry(models.Model):
     duration_hours = models.DecimalField(decimal_places=2,max_digits=4)
 
     objects = EntryManager()
+
+    def __str__(self):
+        return self.user.username + " " + self.exercise.name + " Entry " + self.date.strftime("%m/%d/%Y")
 
 
 
