@@ -23,31 +23,42 @@
           {% endfor %}
         </div>
     </div>
-    <div class="" style="padding-top:100px; padding-bottom: 200px;">
-      <div class="flex-container">
-          <div class="flex-item-sortby" style="color:white">Sort By</div>
-          <div class="flex-item-name" style="color:white">Name</div>
-          <div class="flex-item-location" style="color:white">Location</div>
-          <div class="flex-item-cal" style="color:white">Calories Burned</div>
-      </div>
-      <div class="flex-container2">
-          <div class="flex-item-sort" style="color:black">
-            <form action="">
-              <input type="radio" id="male" name="gender" value="male">
-              <label for="male">option1</label><br>
-              <input type="radio" id="female" name="gender" value="female">
-              <label for="female">option2</label><br>
-              <input type="radio" id="other" name="gender" value="other">
-              <label for="other">option3</label>
-              <input type="submit" value="Sort">
-            </form>
-          </div>
-          <div class="flex-item-names" style="color:black">Jason Lee</div>
-          <div class="flex-item-locations" style="color:black">Charlottesville</div>
-          <div class="flex-item-cals" style="color:black">200</div>
-      </div>
-    </div>
+    <div class="flex-container" style="padding-top:100px; padding-bottom: 200px;">
+        <div class="flex-item-sortby" style="color:white">
+        Sort By
 
+                <div class="flex-item-sort" style="color:black"><form action="/action_page.php">
+                    <div class="flex-container-2">
+                        <input type="radio" id="male" name="gender" value="male">
+                        <label for="male">option1</label><br>
+                        <input type="radio" id="female" name="gender" value="female">
+                        <label for="female">option2</label><br>
+                        <input type="radio" id="other" name="gender" value="other">
+                        <label for="other">option3</label><br>
+                        <input type="submit" value="Sort"></form>
+                    </div>
+                </div>
+
+        </div>
+        <div class="flex-item-leaderboard">
+            <div class="flex-item-titles" style="color:white">
+                <div class="flex-container">
+                    <div class="flex-item-name" style="color:white">Name</div>
+                    <div class="flex-item-location" style="color:white">Location</div>
+                    <div class="flex-item-cal" style="color:white">Calories Burned</div>
+                </div>
+            </div>
+            <div class ="flex-item-board" style="color:black">
+                <div class="flex-container">
+                    <div class="flex-item-names" >Jason Lee</div>
+                    <div class="flex-item-locations" >Charlottesville</div>
+                    <div class="flex-item-cals" >10</div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endif %}

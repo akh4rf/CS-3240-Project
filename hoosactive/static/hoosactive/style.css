@@ -111,29 +111,36 @@ a {
   padding-right: 80px;
   padding-left: 50px;
 }
-
+.flex-item-sort {
+  background-color: white;
+  padding: 0px;
+  flex: 50%;
+  min-width:200px;
+  max-width : 200px;
+  margin-right : 80px;
+}
 .flex-item-sortby {
   background-color: #1E355D;
-  padding: 10px;
-  flex: 15%;
-  min-width:200px
-
+  padding: 0px;
+  flex: 50%;
+  min-width: 200px;
+  max-width:200px;
+  margin-right : 80px;
 }
 
 .flex-item-name {
   background-color: #1E355D;
-  padding: 10px;
+  padding: 0px;
   flex: 50%;
-  margin-left:70px;
 }
 .flex-item-location {
   background-color: #1E355D;
-  padding: 10px;
+  padding: 0px;
   flex: 50%;
 }
 .flex-item-cal {
   background-color: #1E355D;
-  padding: 10px;
+  padding: 0px;
   flex: 50%;
 
 }
@@ -154,32 +161,36 @@ a {
   padding-left: 50px;
 }
 
-.flex-item-sort {
+
+.flex-item-board {
   background-color: white;
   padding: 10px;
   flex: 15%;
   min-width:200px;
   max-width : 200px;
 }
+
 .flex-item-names {
   background-color: white;
-  padding: 10px;
+  padding: 0px;
   flex: 50%;
-  margin-left:70px;
   max-height: 65px;
+  min-width: 300px;
 }
 .flex-item-locations {
   background-color:white;
-  padding: 10px;
+  padding: 0px;
   flex: 50%;
   max-height: 65px;
+    min-width: 300px;
 
 }
 .flex-item-cals {
   background-color:white;
-  padding: 10px;
+  padding: 0px;
   flex: 50%;
   max-height: 65px;
+  min-width: 300px;
 
 }
 .flex-item-space {
@@ -187,7 +198,17 @@ a {
   padding: 0px;
   flex: 50%;
 }
+.flex-item-titles{
+  background-color: #1E355D;
+  padding: 10px;
+  flex: 50%;
 
+}
+.flex-item-leaderboard {
+  background-color: white;
+  padding: 10px;
+  flex: 50%;
+}
 @media (max-width: 800px) {
   .flex-container-sortby {
     flex-direction: row;
