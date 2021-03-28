@@ -20,10 +20,9 @@
         <div class="modal-body">
           <select class="form-control">
             <option value="" selected disabled>Select Exercise Type</option>
-            <option>Running</option>
-            <option>Sprinting</option>
-            <option>Weight Lifting</option>
-            <option>Bodyweight WOrkout</option>
+            {% for exercise in exercise_list %}
+            <option>{{ exercise.name }}</option>
+            {% endfor %}
           </select>
           <input class="my-2 form-control" type="datetime-local">
           <input class="my-2 form-control" placeholder="Option 1">
