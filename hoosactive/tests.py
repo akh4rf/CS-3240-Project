@@ -26,13 +26,13 @@ class LoginTest(TestCase):
     def test_wrong_username(self):
         c = Client()
         logged_in = c.login(username='usertest', password='!Password1')
-        self.assertFalse(logged_in) 
+        self.assertFalse(logged_in)
 
     # Test Wrong Password
     def test_wrong_password(self):
         c = Client()
         logged_in = c.login(username='testuser', password='1Password!')
-        self.assertFalse(logged_in) 
+        self.assertFalse(logged_in)
 
     # Test Completely Incorrect Input
     def test_incorrect(self):
@@ -42,7 +42,7 @@ class LoginTest(TestCase):
 
 
 class RegisterTest(TestCase):
-    
+
     # Test Correct Registration Input
     def test_correct_registration(self):
         c = Client()
@@ -75,7 +75,7 @@ class EntryTest(TestCase):
         exercise = Exercise.objects.get(name="Running")
         date = datetime.now()
         local_date = pytz.utc.localize(date)
-        Entry.objects.create(user=user, exercise=exercise, date=local_date, cals_burned=1000, duration_hours=45)
+        Entry.objects.create(user=user, exercise=exercise, date=local_date, calories=1000, duration_hours=45)
         entry = Entry.objects.get(user=user)
         entry_string = entry.user.username + " " + entry.exercise.name + " Entry " + entry.date.strftime("%m/%d/%Y")
         self.assertEquals(entry_string, "testuser Running Entry " + local_date.strftime("%m/%d/%Y"))

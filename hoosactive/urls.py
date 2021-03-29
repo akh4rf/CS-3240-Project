@@ -12,6 +12,6 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('register/', views.register, name="register"),
     path('leaderboard/', views.LeaderboardView.as_view(), name="leaderboard"),
-    path('leaderboard/<str:exercise_name>/', views.exercise_leaderboard, name="exercise_leaderboard")
+    path('leaderboard/<str:exercise_name>/<str:sort>/', views.exercise_leaderboard, name="exercise_leaderboard")
 
 ]

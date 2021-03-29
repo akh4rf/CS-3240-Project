@@ -59,7 +59,7 @@ class Profile(models.Model):
 
 class EntryManager(models.Manager):
     def create_entry(self, us, ex, dt, cal, dur):
-        entry = self.create(user=us,exercise=ex,date=dt,cals_burned=cal,duration_hours=dur)
+        entry = self.create(user=us,exercise=ex,date=dt,calories=cal,duration_hours=dur)
         return entry
 
 class Entry(models.Model):
@@ -70,7 +70,7 @@ class Entry(models.Model):
     # Log Date
     date = models.DateTimeField(default=datetime.now())
     # Calories Burned
-    cals_burned = models.PositiveSmallIntegerField()
+    calories = models.PositiveSmallIntegerField()
     # Duration of exercise
     duration_hours = models.DecimalField(decimal_places=2,max_digits=4)
 
