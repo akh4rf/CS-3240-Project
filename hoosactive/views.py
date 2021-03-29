@@ -76,9 +76,18 @@ class LeaderboardView(generic.TemplateView):
         context['exercise_list'] = Exercise.objects.order_by('name')
         return context
 
-def exercise_leaderboard(request, exercise_name):
+def exercise_leaderboard(request, exercise_name, sort):
     exercise = get_object_or_404(Exercise, name=exercise_name)
-    entry_list = exercise.entry_set.all()
+    # d = date.today()
+    # if (timeframe = day):
+    #   set = exercise.entry_set.filter(date__day=d)
+    # elif (timeframe = week):
+    #   week_ago = d - timedelta(days=6)
+    #   set = exercise.entry_set.filter(date__gt=week_ago)
+    # elif (timeframe = month):
+    #   set = exercise.entry_set.filter(date__month=d.month)
+
+    entry_list = exercise.entry_set.order_by('-'+sort)
     return render(request, 'hoosactive/leaderboard.html', {
         'exercise_list': Exercise.objects.order_by('name'),
         'exercise': exercise,

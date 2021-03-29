@@ -2,66 +2,72 @@
 {% block content %}
 {% load static %}
 
-<div style="background-color: #EEEEEE;">
-    {% if user.is_authenticated %}
-    <div class="flex-container">
-        <div class="flex-item-space" style="color:#EEEEEE">&nbsp;&nbsp;</div>
-    </div>
-    {% if exercise %}
-    <text style="font-size: 35px; padding-bottom: 100px; padding-top:100px; padding-left: 50px;">Leaderboard for {{ exercise.name }}</text>
-    {% else %}
-    <text style="font-size: 35px; padding-bottom: 100px; padding-top:100px; padding-left: 50px;">Leaderboard</text>
-    {% endif %}
+<body style="background-color: #EEEEEE;">
+  <div style="padding: 0 50px; margin-top: 50px;">
 
-    <div class="dropdown" style="padding-left:50px;">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Select Leaderboard
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          {% for exercise in exercise_list %}
-          <a class="dropdown-item" href="/leaderboard/{{ exercise.name }}">{{ exercise.name }}</a>
+    <!-- Main Title Text -->
+    <div style="font-size: 35px;">
+      {% if exercise %}
+      <text>Leaderboard for {{ exercise.name }}</text>
+      {% else %}
+      <text>Leaderboard</text>
+      {% endif %}
+    </div>
+
+    <!-- Dropdown Menu -->
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Select Leaderboard
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {% for exer in exercise_list %}
+        <a class="dropdown-item" href="/leaderboard/{{ exer.name }}/calories">{{ exer.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top: 50px;">
+      <!-- Left Side -->
+      <div style="display: inline-block; width: 200px; float: left;">
+        <!-- Sort Options -->
+        <div style="font-size: 24px; text-align: center; float: left; display: inline-block; width: 200px; height: 255px;">
+          <div style="color: black; background-color: white;">
+              <div class="bg-blue" style="padding: 10px; color: white;">Sort By</div>
+              <div style="padding: 10px;">
+                <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/calories">Calories</a>
+              </div>
+              <div style="padding: 10px;">
+                <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/duration_hours">Total Hours</a>
+              </div>
+          </div>
+        </div>
+      </div><!--
+        Right Side
+   --><div style="display: inline-block; width: calc(100% - 200px); padding-left: 80px; text-align: center;">
+        <!-- Leaderboard -->
+        <div style="float: left; font-size: 24px; width: 100%;">
+          <div class="bg-blue" style="color: white; padding: 10px;">
+            <div class="leaderboard-flex-table">
+              <div>Username</div>
+              <div>Location</div>
+              <div>Calories Burned</div>
+              <div>Total Hours</div>
+            </div>
+          </div>
+          {% for entry in entry_list %}
+          <div class="bg-white" style="color: black; padding: 10px;">
+            <div class="leaderboard-flex-table">
+              <div>{{ entry.user.username }}</div>
+              <div>{{ entry.user.profile.city }}</div>
+              <div>{{ entry.calories }}</div>
+              <div>{{ entry.duration_hours }}</div>
+            </div>
+          </div>
           {% endfor %}
         </div>
+      </div>
     </div>
-    <div class="flex-container" style="padding-top:100px; padding-bottom: 200px;">
-        <div class="flex-item-sortby" style="color:white">
-        Sort By
-
-                <div class="flex-item-sort" style="color:black"><form action="/action_page.php">
-                    <div class="flex-container-2">
-                        <input type="radio" id="male" name="gender" value="male">
-                        <label for="male">option1</label><br>
-                        <input type="radio" id="female" name="gender" value="female">
-                        <label for="female">option2</label><br>
-                        <input type="radio" id="other" name="gender" value="other">
-                        <label for="other">option3</label><br>
-                        <input type="submit" value="Sort"></form>
-                    </div>
-                </div>
-
-        </div>
-        <div class="flex-item-leaderboard">
-            <div class="flex-item-titles" style="color:white">
-                <div class="flex-container">
-                    <div class="flex-item-name" style="color:white">Name</div>
-                    <div class="flex-item-location" style="color:white">Location</div>
-                    <div class="flex-item-cal" style="color:white">Calories Burned</div>
-                </div>
-            </div>
-            <div class ="flex-item-board" style="color:black">
-                <div class="flex-container">
-                    <div class="flex-item-names" >Jason Lee</div>
-                    <div class="flex-item-locations" >Charlottesville</div>
-                    <div class="flex-item-cals" >10</div>
-
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% endif %}
-
+  </div>
+</body>
 
 {% endblock %}
