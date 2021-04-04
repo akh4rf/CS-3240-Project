@@ -2,12 +2,68 @@
 {% block content %}
 {% load static %}
 
-<div style="height: 100%; text-align: center; margin-top: 100px;">
+<div style="height: 100%; text-align: center;">
   {% if user.is_authenticated %}
   <br></br>
-  <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
-  <p style="font-size:30px;color:rgb(72,72,72);">{{ user.first_name }} {{ user.last_name }}</p>
-  <p style="font-size:20px;color:gray;">{{ user.email }}</p>
+  <div class="row no-gutters">
+    <div class="col">
+
+      <!-- This is a placeholder for a some progress chart. -->
+      <table class="col-8 table table-dark table-hover mt-5 mx-auto">
+        <thead>
+          <tr>
+            <th scope="col">Placeholder for Progress Chart</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>4-mile Run</td>
+            <td>4/15/2021</td>
+            <td>9:00AM</td>
+          </tr>
+          <tr>
+            <td>100 Push-Ups</td>
+            <td>4/20/2021</td>
+            <td>10:00AM</td>
+          </tr>
+          <tr>
+            <td>Bench Press</td>
+            <td>6/12/2021</td>
+            <td>8:00AM</td>
+          </tr>
+          <tr>
+            <td>10-mile Run</td>
+            <td>11/12/2021</td>
+            <td>7:30PM</td>
+          </tr>
+          <tr>
+            <td>Bench Press</td>
+            <td>12/25/2021</td>
+            <td>2:15PM</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Button meant to open Modal to adding exercise. -->
+      <button style="font-size: 25px;" class="bi bi-plus-circle col-8 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#AddExerciseModal"> ADD EXERCISE </button>
+      <!-- Modal in base.html -->
+
+      <!-- Button meant to direct to workout scheduler. -->
+      <button style="font-size: 25px;" class="bi bi-calendar-date col-8 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#ScheduleWorkoutModal"> SCHEDULE WORKOUT </button>
+      <!-- Modal in base.html -->
+
+    </div>
+    <div class="col mt-5">
+      <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
+      <p style="font-size:30px;color:rgb(72,72,72);">{{ user.first_name }} {{ user.last_name }}</p>
+      <p style="font-size:20px;color:gray;">{{ user.email }}</p>
+      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
+      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
+    </div>
+  </div>
+  
   {% endif %}
 </div>
 
