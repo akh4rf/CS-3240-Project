@@ -57,7 +57,13 @@
     </div>
     <div class="col mt-5">
       <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
+      
+      {% if user.first_name %}
       <p style="font-size:30px;color:rgb(72,72,72);">{{ user.first_name }} {{ user.last_name }}</p>
+      {% else %}
+      <p style="font-size:30px;color:rgb(72,72,72);">{{ user.username }}</p>
+      {% endif %}
+
       <p style="font-size:20px;color:gray;">{{ user.email }}</p>
       <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
       <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
