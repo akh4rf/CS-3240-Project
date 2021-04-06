@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
-from .forms import CreateUserForm
+from .forms import CreateUserForm, PostForm
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login as auth_login
 from django.contrib import messages
@@ -29,7 +29,7 @@ def log_exercise(request):
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect('hoosactive:index.html')
     else:
         form = CreateUserForm()
         if request.method == 'POST':
@@ -39,7 +39,7 @@ def register(request):
                 user = form.cleaned_data.get('username')
                 messages.success(request, 'Account was created for ' + user)
 
-                return redirect('hoosactive:login')
+                return redirect('hoosactive:profileCreation')
 
         context = {'form': form}
         return render(request, 'hoosactive/register.html', context)
@@ -67,6 +67,19 @@ def login(request):
 
 def profile(request):
     return render(request, 'hoosactive/profile.html', {})
+
+def create(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            #age = form.cleaned_data.get('age')
+            #messages.success(request, 'Profile was created for ' + age)
+
+            return redirect('hoosactive:create')
+
+    #context = {'form': form}
+    return render(request, 'hoosactive/create.html', {})
 
 class LeaderboardView(generic.TemplateView):
     template_name = 'hoosactive/leaderboard.html'
