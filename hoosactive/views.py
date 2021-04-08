@@ -69,6 +69,7 @@ def profile(request):
     return render(request, 'hoosactive/profile.html', {})
 
 def create(request):
+    form = PostForm()
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
@@ -78,8 +79,8 @@ def create(request):
 
             return redirect('hoosactive:create')
 
-    #context = {'form': form}
-    return render(request, 'hoosactive/create.html', {})
+    context = {'form': form}
+    return render(request, 'hoosactive/create.html', context)
 
 class LeaderboardView(generic.TemplateView):
     template_name = 'hoosactive/leaderboard.html'
