@@ -3,16 +3,17 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
-from .forms import CreateUserForm
+from .forms import CreateUserForm, PostForm
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login as auth_login
 from django.contrib import messages
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.views import generic
 from django.utils import timezone
 import datetime
 from django.db.models import Sum
-
+from .decorators import created_profile
 
 def index(request):
     if (request.user.is_authenticated):
@@ -28,7 +29,6 @@ def index(request):
         'workout_list': workout_list,
         'workout_blank': range(0,5-count)
     })
-
 
 def log_exercise(request):
     user = request.user
@@ -51,9 +51,9 @@ def register(request):
         if request.method == 'POST':
             form = CreateUserForm(request.POST)
             if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request, 'Account was created for ' + user)
+                user =form.save()
+                username = form.cleaned_data.get('username')
+                messages.success(request, 'Account was created for ' + username)
 
                 return redirect('hoosactive:login')
 
@@ -73,7 +73,10 @@ def login(request):
 
             if user is not None:
                 auth_login(request, user)
-                return redirect('hoosactive:index')
+                if request.user.groups.filter(name='profile').exists():
+                    return redirect('hoosactive:index')
+                else:
+                    return redirect('hoosactive:create')
             else:
                 messages.info(request, 'Username OR password is incorrect')
 
@@ -86,11 +89,37 @@ def profile(request):
         date__gt=timezone.now()
     ).order_by('date')[:5]
 
-    return render(request, 'hoosactive/profile.html', {
-        'workout_list': workout_list,
-        'workout_blank': range(0,5-workout_list.count())
-    })
+    if request.user.is_authenticated:
+        if request.user.groups.filter(name='profile').exists():
+            return render(request, 'hoosactive/profile.html', {
+              'workout_list': workout_list,
+              'workout_blank': range(0,5-workout_list.count())
+            })
+        else:
+            return redirect('hoosactive:create')
+    else:
+        return redirect('hoosactive:login')
 
+
+def create(request):
+    if request.user.is_authenticated:
+        form = PostForm()
+        if request.method == 'POST':
+            form = PostForm(request.POST)
+            if form.is_valid():
+                profile = form.save(commit=False)
+                profile.user = request.user
+                #age = form.cleaned_data.get('age')
+                #messages.success(request, 'Profile was created for ' + age)
+                group, created = Group.objects.get_or_create(name='profile')
+
+                request.user.groups.add(group)
+                return redirect('hoosactive:profile')
+
+        context = {'form': form}
+        return render(request, 'hoosactive/create.html', context)
+    else:
+        return redirect('hoosactive:login')
 class LeaderboardView(generic.TemplateView):
     template_name = 'hoosactive/leaderboard.html'
 
