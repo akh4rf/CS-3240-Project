@@ -105,32 +105,27 @@ def profile(request):
 
 
 def create(request):
-    if request.user.is_authenticated:
-        form = PostForm()
+    user = request.user
+    form = PostForm()
+    if user.is_authenticated:
         if request.method == 'POST':
             form = PostForm(request.POST)
             if form.is_valid():
-                profile = form.save(commit=False)
-                profile.user = request.user
+                Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],request.POST['bio_text'],request.POST['city'],request.POST['state'])
                 #age = form.cleaned_data.get('age')
-                #messages.success(request, 'Profile was created for ' + age)
-                group, created = Group.objects.get_or_create(name='profile')
-
-                request.user.groups.add(group)
                 return redirect('hoosactive:profile')
 
         context = {'form': form}
         return render(request, 'hoosactive/create.html', context)
     else:
-        return redirect('hoosactive:login')
+        return redirect('hoosactive:index')
 
-class LeaderboardView(generic.TemplateView):
-    template_name = 'hoosactive/leaderboard.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(LeaderboardView, self).get_context_data(**kwargs)
-        context['exercise_list'] = Exercise.objects.order_by('name')
-        return context
+def leaderboard(request):
+    return render(request, 'hoosactive/leaderboard.html', {
+        'exercise_list': Exercise.objects.order_by('name')
+    })
+
 
 def exercise_leaderboard(request, exercise_name, sort, timeframe):
     exercise = get_object_or_404(Exercise, name=exercise_name)
