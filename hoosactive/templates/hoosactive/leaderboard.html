@@ -34,6 +34,7 @@
         <div style="font-size: 24px; text-align: center; float: left; display: inline-block; width: 200px;">
           <div style="color: black; background-color: white;">
               <div class="bg-blue" style="padding: 10px; color: white;">Sort By</div>
+              {% if exercise %}
               <div style="padding: 10px;">
                 <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/calories/{{ timeframe }}">Calories</a>
               </div>
@@ -50,6 +51,7 @@
               <div style="padding: 10px;">
                 <a style="font-size: 24px;" class="btn login_btn" href="../month">Month</a>
               </div>
+              {% endif %}
           </div>
         </div>
       </div><!--

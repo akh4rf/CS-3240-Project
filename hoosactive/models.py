@@ -14,7 +14,12 @@ class Exercise(models.Model):
     def __str__(self):
         return self.name
 
-
+class ProfileManager(models.Manager):
+    def create_profile(self, us, age, hf, hi, we, bio, ci, st):
+        profile = self.create(user=us,age=age,height_feet=hf,height_inches=hi,
+                    weight_lbs=we,bio_text=bio,city=ci,state=st)
+        profile.show_stats = False
+        return profile
 
 class Profile(models.Model):
     # One-To-One Relationship with User Model
@@ -43,6 +48,8 @@ class Profile(models.Model):
     # Toggles whether stats are shown or not
     show_stats = models.BooleanField(default = True)
 
+    objects = ProfileManager()
+
     def __str__(self):
         return self.user.username + "'s Profile"
 
@@ -51,8 +58,8 @@ class Profile(models.Model):
         return (self.exercises.all().filter(name = exercise_name).count() > 0)
     def add_exercise(self, exercise_name):
         # Check if relationship to exercise already exists
-        if (self.does_exercise(exercise_name)):
-            exercise = Exercise.objects.filter(name = exercise_name)
+        if not self.does_exercise(exercise_name):
+            exercise = Exercise.objects.get(name=exercise_name)
             self.exercises.add(exercise)
 
 
