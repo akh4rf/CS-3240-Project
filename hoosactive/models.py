@@ -29,6 +29,8 @@ class Profile(models.Model):
     )
     # Many-To-Many Relationship with Exercise Model
     exercises = models.ManyToManyField(Exercise)
+    # Many-To-Many Relationship with other Users
+    friends = models.ManyToManyField(User, related_name='friends_set')
     # Age
     age = models.PositiveSmallIntegerField()
     # Height

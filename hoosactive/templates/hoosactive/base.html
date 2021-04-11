@@ -28,7 +28,7 @@
   </a>
   <div style="color: white; width: 600px; float: right; text-align: center; font-size: 20px;">
     {% if user.is_authenticated %}
-    <a style="text-decoration: none; padding: 23px 0; width: 33%; display: inline-block;" href="{% url 'hoosactive:profile' %}">
+    <a style="text-decoration: none; padding: 23px 0; width: 33%; display: inline-block;" href="{% url 'hoosactive:profile' user.username %}">
       Profile
     </a><a style="text-decoration: none; padding: 23px 0; width: 33%; display: inline-block;" href="{% url 'hoosactive:leaderboard' %}">
     Leaderboard
