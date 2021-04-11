@@ -18,8 +18,7 @@ class Exercise(models.Model):
 
 class Profile(models.Model):
     # One-To-One Relationship with User Model
-    user = models.OneToOneField(
-        User,
+    user = models.OneToOneField(User,
         on_delete = models.CASCADE,
         primary_key = True,
     )
