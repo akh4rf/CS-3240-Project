@@ -80,25 +80,37 @@ def login(request):
         context = {}
         return render(request, 'hoosactive/login.html', context)
 
+def profile_noname(request):
+    return HttpResponseRedirect('/profile/'+request.user.username)
 
-def profile(request):
-    user = request.user
+def profile(request, username):
+    authenticated_user = request.user
+    profile_user = User.objects.get(username=username)
 
-    if user.is_authenticated:
+    if authenticated_user.is_authenticated:
         try:
-            user.profile
+            profile_user.profile
         except:
-            return redirect('hoosactive:create')
+            if (authenticated_user == profile_user):
+                return redirect('hoosactive:create')
+            else:
+                return redirect('hoosactive:index')
         else:
-            workout_list = user.workout_set.filter(
+            workout_list = profile_user.workout_set.filter(
                 date__gt=timezone.now()
             ).order_by(
                 'date'
             )[:5]
 
+            is_friend = False
+            if profile_user in authenticated_user.profile.friends.all():
+                is_friend = True
+
             return render(request, 'hoosactive/profile.html', {
               'workout_list': workout_list,
-              'workout_blank': range(0,5-workout_list.count())
+              'workout_blank': range(0,5-workout_list.count()),
+              'profile_user': profile_user,
+              'is_friend': is_friend
             })
     else:
         return redirect('hoosactive:login')
