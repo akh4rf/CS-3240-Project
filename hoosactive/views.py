@@ -70,29 +70,34 @@ def login(request):
 
 
 def profile(request):
-    if request.user.groups.filter(name='profile').exists():
-        return render(request, 'hoosactive/profile.html', {})
+    if request.user.is_authenticated:
+        if request.user.groups.filter(name='profile').exists():
+            return render(request, 'hoosactive/profile.html', {})
+        else:
+            return redirect('hoosactive:create')
     else:
-        return redirect('hoosactive:create')
+        return redirect('hoosactive:login')
 
 
 def create(request):
-    form = PostForm()
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = request.user
-            #age = form.cleaned_data.get('age')
-            #messages.success(request, 'Profile was created for ' + age)
-            group, created = Group.objects.get_or_create(name='profile')
+    if request.user.is_authenticated:
+        form = PostForm()
+        if request.method == 'POST':
+            form = PostForm(request.POST)
+            if form.is_valid():
+                profile = form.save(commit=False)
+                profile.user = request.user
+                #age = form.cleaned_data.get('age')
+                #messages.success(request, 'Profile was created for ' + age)
+                group, created = Group.objects.get_or_create(name='profile')
 
-            request.user.groups.add(group)
-            return redirect('hoosactive:profile')
+                request.user.groups.add(group)
+                return redirect('hoosactive:profile')
 
-    context = {'form': form}
-    return render(request, 'hoosactive/create.html', context)
-
+        context = {'form': form}
+        return render(request, 'hoosactive/create.html', context)
+    else:
+        return redirect('hoosactive:login')
 class LeaderboardView(generic.TemplateView):
     template_name = 'hoosactive/leaderboard.html'
 
