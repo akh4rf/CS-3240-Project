@@ -70,7 +70,11 @@ def login(request):
 
 
 def profile(request):
-    return render(request, 'hoosactive/profile.html', {})
+    if request.user.groups.filter(name='profile').exists():
+        return render(request, 'hoosactive/profile.html', {})
+    else:
+        return redirect('hoosactive:create')
+
 
 def create(request):
     form = PostForm()
