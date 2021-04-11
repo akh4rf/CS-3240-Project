@@ -59,6 +59,8 @@ class Profile(models.Model):
 class EntryManager(models.Manager):
     def create_entry(self, us, ex, dt, cal, dur):
         entry = self.create(user=us,exercise=ex,date=dt,calories=cal,duration_hours=dur)
+        if not us.profile.does_exercise(ex):
+            us.profile.add_exercise(ex)
         return entry
 
 class Entry(models.Model):
@@ -67,7 +69,7 @@ class Entry(models.Model):
     # Foreign Key to related Exercise
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     # Log Date
-    date = models.DateTimeField(default=datetime.now())
+    date = models.DateTimeField(default=timezone.now)
     # Calories Burned
     calories = models.PositiveSmallIntegerField()
     # Duration of exercise
@@ -78,7 +80,23 @@ class Entry(models.Model):
     def __str__(self):
         return self.user.username + " " + self.exercise.name + " Entry " + self.date.strftime("%m/%d/%Y")
 
+class WorkoutManager(models.Manager):
+    def schedule_workout(self, us, de, dt):
+        workout = self.create(user=us,desc=de,date=dt)
+        return workout
 
+class Workout(models.Model):
+    # Foreign Key to related User
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Short Description
+    desc = models.CharField(max_length=30)
+    # Scheduled Date
+    date = models.DateTimeField(default=timezone.now)
+
+    objects = WorkoutManager()
+
+    def __str__(self):
+        return self.user.username + " Scheduled Exercise For " + self.date.strftime("%m/%d/%Y")
 
 class RunningEntry(Entry):
     # Distance Ran

@@ -4,9 +4,6 @@ from django.contrib.auth.models import User
 from django import forms
 from hoosactive.models import Profile
 
-
-
-
 class CreateUserForm(UserCreationForm):
 	class Meta:
 		model = User
@@ -16,3 +13,4 @@ class PostForm(forms.ModelForm):
 	class Meta:
 		model = Profile
 		fields = ['age', 'height_feet', 'height_inches', 'weight_lbs', 'bio_text', 'city', 'state', 'show_stats']
+

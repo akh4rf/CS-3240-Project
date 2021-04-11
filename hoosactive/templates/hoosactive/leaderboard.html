@@ -7,11 +7,12 @@
 
     <!-- Main Title Text -->
     <div style="font-size: 35px;">
-      {% if exercise %}
-      <text>Leaderboard for {{ exercise.name }}</text>
-      {% else %}
-      <text>Leaderboard</text>
+      <text>Leaderboard{% if exercise %} for {{ exercise.name }} -
+      {% if timeframe == "day" %}Daily{% endif %}
+      {% if timeframe == "week" %}Weekly{% endif %}
+      {% if timeframe == "month" %}Monthly{% endif %}
       {% endif %}
+      </text>
     </div>
 
     <!-- Dropdown Menu -->
@@ -21,7 +22,7 @@
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         {% for exer in exercise_list %}
-        <a class="dropdown-item" href="/leaderboard/{{ exer.name }}/calories">{{ exer.name }}</a>
+        <a class="dropdown-item" href="/leaderboard/{{ exer.name }}/calories/day">{{ exer.name }}</a>
         {% endfor %}
       </div>
     </div>
@@ -30,14 +31,24 @@
       <!-- Left Side -->
       <div style="display: inline-block; width: 200px; float: left;">
         <!-- Sort Options -->
-        <div style="font-size: 24px; text-align: center; float: left; display: inline-block; width: 200px; height: 255px;">
+        <div style="font-size: 24px; text-align: center; float: left; display: inline-block; width: 200px;">
           <div style="color: black; background-color: white;">
               <div class="bg-blue" style="padding: 10px; color: white;">Sort By</div>
               <div style="padding: 10px;">
-                <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/calories">Calories</a>
+                <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/calories/{{ timeframe }}">Calories</a>
               </div>
               <div style="padding: 10px;">
-                <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/duration_hours">Total Hours</a>
+                <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/duration_hours/{{ timeframe }}">Total Hours</a>
+              </div>
+              <hr style="margin: 5px 0;">
+              <div style="padding: 10px;">
+                <a style="font-size: 24px;" class="btn login_btn" href="../day">Day</a>
+              </div>
+              <div style="padding: 10px;">
+                <a style="font-size: 24px;" class="btn login_btn" href="../week">Week</a>
+              </div>
+              <div style="padding: 10px;">
+                <a style="font-size: 24px;" class="btn login_btn" href="../month">Month</a>
               </div>
           </div>
         </div>
@@ -59,8 +70,8 @@
             <div class="leaderboard-flex-table">
               <div>{{ entry.user.username }}</div>
               <div>{{ entry.user.profile.city }}</div>
-              <div>{{ entry.calories }}</div>
-              <div>{{ entry.duration_hours }}</div>
+              <div>{{ entry.total_cals }}</div>
+              <div>{{ entry.total_time }}</div>
             </div>
           </div>
           {% endfor %}

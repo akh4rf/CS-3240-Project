@@ -12,37 +12,26 @@
       <table class="col-8 table table-dark table-hover mt-5 mx-auto">
         <thead>
           <tr>
-            <th scope="col">Placeholder for Progress Chart</th>
+            <th scope="col">Upcoming Workout</th>
             <th scope="col">Date</th>
             <th scope="col">Time</th>
           </tr>
         </thead>
         <tbody>
+          {% for workout in workout_list %}
           <tr>
-            <td>4-mile Run</td>
-            <td>4/15/2021</td>
-            <td>9:00AM</td>
+            <td>{{ workout.desc }}</td>
+            <td>{{ workout.date|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ workout.date|date:"g" }}:{{ workout.date|date:"i" }} {{ workout.date|date:"A" }}</td>
           </tr>
+          {% endfor %}
+          {% for blank in workout_blank %}
           <tr>
-            <td>100 Push-Ups</td>
-            <td>4/20/2021</td>
-            <td>10:00AM</td>
+            <td>⠀</td>
+            <td>⠀</td>
+            <td>⠀</td>
           </tr>
-          <tr>
-            <td>Bench Press</td>
-            <td>6/12/2021</td>
-            <td>8:00AM</td>
-          </tr>
-          <tr>
-            <td>10-mile Run</td>
-            <td>11/12/2021</td>
-            <td>7:30PM</td>
-          </tr>
-          <tr>
-            <td>Bench Press</td>
-            <td>12/25/2021</td>
-            <td>2:15PM</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
 
@@ -57,7 +46,7 @@
     </div>
     <div class="col mt-5">
       <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
-      
+
       {% if user.first_name %}
       <p style="font-size:30px;color:rgb(72,72,72);">{{ user.first_name }} {{ user.last_name }}</p>
       {% else %}
@@ -69,7 +58,7 @@
       <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
     </div>
   </div>
-  
+
   {% endif %}
 </div>
 

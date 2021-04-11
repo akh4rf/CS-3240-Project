@@ -12,7 +12,7 @@
   {% else %}
   <div class="col-6 mx-5 text-white h1">Welcome, {{ user.username }}!</div>
   {% endif %}
-  
+
   <!-- Button meant to open Modal to adding exercise. -->
   <button style="font-size: 25px;" class="bi bi-plus-circle col-7 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#AddExerciseModal"> ADD EXERCISE </button>
   <!-- Modal in base.html -->
@@ -31,31 +31,20 @@
       </tr>
     </thead>
     <tbody>
+      {% for workout in workout_list %}
       <tr>
-        <td>4-mile Run</td>
-        <td>4/15/2021</td>
-        <td>9:00AM</td>
+        <td>{{ workout.desc }}</td>
+        <td>{{ workout.date|date:"SHORT_DATE_FORMAT" }}</td>
+        <td>{{ workout.date|date:"g" }}:{{ workout.date|date:"i" }} {{ workout.date|date:"A" }}</td>
       </tr>
+      {% endfor %}
+      {% for blank in workout_blank %}
       <tr>
-        <td>100 Push-Ups</td>
-        <td>4/20/2021</td>
-        <td>10:00AM</td>
+        <td>⠀</td>
+        <td>⠀</td>
+        <td>⠀</td>
       </tr>
-      <tr>
-        <td>Bench Press</td>
-        <td>6/12/2021</td>
-        <td>8:00AM</td>
-      </tr>
-      <tr>
-        <td>10-mile Run</td>
-        <td>11/12/2021</td>
-        <td>7:30PM</td>
-      </tr>
-      <tr>
-        <td>Bench Press</td>
-        <td>12/25/2021</td>
-        <td>2:15PM</td>
-      </tr>
+      {% endfor %}
     </tbody>
   </table>
   {% else %}
