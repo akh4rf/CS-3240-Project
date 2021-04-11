@@ -73,10 +73,7 @@ def login(request):
 
             if user is not None:
                 auth_login(request, user)
-                if request.user.groups.filter(name='profile').exists():
-                    return redirect('hoosactive:index')
-                else:
-                    return redirect('hoosactive:create')
+                return redirect('hoosactive:index')
             else:
                 messages.info(request, 'Username OR password is incorrect')
 
@@ -85,18 +82,24 @@ def login(request):
 
 
 def profile(request):
-    workout_list = request.user.workout_set.filter(
-        date__gt=timezone.now()
-    ).order_by('date')[:5]
+    user = request.user
 
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name='profile').exists():
+    if user.is_authenticated:
+        try:
+            user.profile
+        except:
+            return redirect('hoosactive:create')
+        else:
+            workout_list = user.workout_set.filter(
+                date__gt=timezone.now()
+            ).order_by(
+                'date'
+            )[:5]
+
             return render(request, 'hoosactive/profile.html', {
               'workout_list': workout_list,
               'workout_blank': range(0,5-workout_list.count())
             })
-        else:
-            return redirect('hoosactive:create')
     else:
         return redirect('hoosactive:login')
 
@@ -120,6 +123,7 @@ def create(request):
         return render(request, 'hoosactive/create.html', context)
     else:
         return redirect('hoosactive:login')
+
 class LeaderboardView(generic.TemplateView):
     template_name = 'hoosactive/leaderboard.html'
 
