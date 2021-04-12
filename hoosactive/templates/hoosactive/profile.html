@@ -48,14 +48,35 @@
       <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
 
       {% if user.first_name %}
-      <p style="font-size:30px;color:rgb(72,72,72);">{{ user.first_name }} {{ user.last_name }}</p>
+      <p class="font-weight-bold" style="font-size:30px;color:black;">{{ user.first_name }} {{ user.last_name }}</p>
       {% else %}
-      <p style="font-size:30px;color:rgb(72,72,72);">{{ user.username }}</p>
+      <p class="font-weight-bold" style="font-size:30px;color:black;">{{ user.username }}</p>
       {% endif %}
 
-      <p style="font-size:20px;color:gray;">{{ user.email }}</p>
+      <p style="font-size:20px;color:gray;">{{ user.profile.bio_text }}</p>
+      <p style="font-size:20px;color:gray;">Age: {{ user.profile.age }}, Birthday: {{ user.profile.birthday }}</p>
+      <p style="font-size:20px;color:gray;">Height: {{ user.profile.height_feet }}' {{ user.profile.height_inches }}", Weight: {{ user.profile.weight_lbs }} lbs</p>
+      <p style="font-size:20px;color:gray;">{{ user.profile.city }}, {{ user.profile.state }}</p>
       <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
-      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
+      <button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#SettingsModal">Settings</button>
+      <!-- Settings Modal -->
+      <div id="SettingsModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Settings</h5>
+            </div>
+            <div class="modal-body">
+              <a href="/create"><button class="col-8 m-3 p-3 btn btn-outline-primary font-weight-bold">Edit Profile</button></a>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
