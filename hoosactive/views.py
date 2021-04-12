@@ -135,7 +135,8 @@ def create(request):
 
 def leaderboard(request):
     return render(request, 'hoosactive/leaderboard.html', {
-        'exercise_list': Exercise.objects.order_by('name')
+        'exercise_list': Exercise.objects.order_by('name'),
+        'timeframe': 'day'
     })
 
 
