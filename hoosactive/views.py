@@ -124,8 +124,7 @@ def create(request):
             form = PostForm(request.POST)
             if form.is_valid():
                 Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],request.POST['bio_text'],request.POST['city'],request.POST['state'])
-                #age = form.cleaned_data.get('age')
-                return redirect('hoosactive:profile')
+                return HttpResponseRedirect('/profile/'+request.user.username)
 
         context = {'form': form}
         return render(request, 'hoosactive/create.html', context)

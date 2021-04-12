@@ -8,15 +8,22 @@
 		<div class="d-flex justify-content-center h-100">
 			<div class="user_card">
 				<div class="d-flex justify-content-center">
+
+					<!-- Should be changed to something more official than user.profile.age -->
+					{% if user.profile.age %}
+					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">EDIT PROFILE</h2>
+					{% else %}
 					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">CREATE PROFILE</h2>
+					{% endif%}
+
 				</div>
 				<div class="d-flex justify-content-center" style="margin-top: 20px;">
 
 					<form method="POST" action="">
 						{% csrf_token %}
+						<h1 style="color: white">Enter Bio:</h1>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
-								<span class="input-group-text"></span>
 							</div>
 							{{form.bio_text}}
 						</div>
@@ -58,7 +65,7 @@
 						</div>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
-								<span class="input-group-text"></span>
+								<p style="color: white;">Do you want your profile to be public?</p>
 							</div>
 							{{form.show_stats}}
 						</div>
