@@ -8,32 +8,61 @@
   <div class="row no-gutters">
     <div class="col">
 
-      <!-- This is a placeholder for a some progress chart. -->
-      <table class="col-8 table table-dark table-hover mt-5 mx-auto">
-        <thead>
-          <tr>
-            <th scope="col">Upcoming Workout</th>
-            <th scope="col">Date</th>
-            <th scope="col">Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for workout in workout_list %}
-          <tr>
-            <td>{{ workout.desc }}</td>
-            <td>{{ workout.date|date:"SHORT_DATE_FORMAT" }}</td>
-            <td>{{ workout.date|date:"g" }}:{{ workout.date|date:"i" }} {{ workout.date|date:"A" }}</td>
-          </tr>
-          {% endfor %}
-          {% for blank in workout_blank %}
-          <tr>
-            <td>⠀</td>
-            <td>⠀</td>
-            <td>⠀</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <!-- This is a chart. -->
+      <script type="text/javascript">
+        google.charts.load("current", {packages:['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        var date1 = new Date();
+        var date2 = new Date();
+        var date3 = new Date();
+        var date4 = new Date();
+        var date5 = new Date();
+        var date6 = new Date();
+        var date7 = new Date();
+        date2.setDate(date1.getDate()-1);
+        date3.setDate(date1.getDate()-2);
+        date4.setDate(date1.getDate()-3);
+        date5.setDate(date1.getDate()-4);
+        date6.setDate(date1.getDate()-5);
+        date7.setDate(date1.getDate()-6);
+        console.log(date1);
+        console.log(date2);
+        console.log(date3);
+        console.log(date4);
+        console.log(date5);
+        console.log(date6);
+        console.log(date7);
+
+        var days = ["MONDAY", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        
+        function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Date', 'Calories Burned', { role: 'style' } ],
+            [days[date7.getDay()-1], 10, 'color: #76A7FA'],
+            [days[date6.getDay()-1], 14, 'color: #76A7FA'],
+            [days[date5.getDay()-1], 16, 'color: #76A7FA'],
+            [days[date4.getDay()-1], 22, 'color: #76A7FA'],
+            [days[date3.getDay()-1], 28, 'color: #76A7FA'],
+            ['Yesterday', 35, 'color: #76A7FA'],
+            ['Today', 42, 'color: #76A7FA'],
+          ]);
+
+          var view = new google.visualization.DataView(data);
+
+          var options = {
+            title: "Calories Burned by Day",
+            width: 750,
+            height: 400,
+            bar: {groupWidth: "95%"},
+            legend: { position: "none" },
+            fontSize: 10
+          };
+          var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+          chart.draw(view, options);
+        }
+      </script>
+      <div class="col-8" id="columnchart_values"></div>
 
       {% if user == profile_user %}
       <!-- Button meant to open Modal to adding exercise. -->
@@ -46,6 +75,7 @@
       {% endif %}
 
     </div>
+
     <div class="col mt-5">
       <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
 
