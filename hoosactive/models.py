@@ -15,10 +15,9 @@ class Exercise(models.Model):
         return self.name
 
 class ProfileManager(models.Manager):
-    def create_profile(self, us, age, hf, hi, we, bio, ci, st):
+    def create_profile(self, us, age, hf, hi, we, bio, ci, st, ss):
         profile = self.create(user=us,age=age,height_feet=hf,height_inches=hi,
-                    weight_lbs=we,bio_text=bio,city=ci,state=st)
-        profile.show_stats = False
+                    weight_lbs=we,bio_text=bio,city=ci,state=st,show_stats=ss)
         return profile
 
 class Profile(models.Model):
@@ -66,8 +65,8 @@ class Profile(models.Model):
 
 
 class EntryManager(models.Manager):
-    def create_entry(self, us, ex, dt, cal, dur):
-        entry = self.create(user=us,exercise=ex,date=dt,calories=cal,duration_hours=dur)
+    def create_entry(self, us, un, ci, ex, dt, cal, dur):
+        entry = self.create(user=us,username=un,city=ci,exercise=ex,date=dt,calories=cal,duration_hours=dur)
         if not us.profile.does_exercise(ex):
             us.profile.add_exercise(ex)
         return entry

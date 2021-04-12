@@ -8,14 +8,7 @@
 		<div class="d-flex justify-content-center h-100">
 			<div class="user_card">
 				<div class="d-flex justify-content-center">
-
-					<!-- Should be changed to something more official than user.profile.age -->
-					{% if user.profile.age %}
-					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">EDIT PROFILE</h2>
-					{% else %}
-					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">CREATE PROFILE</h2>
-					{% endif%}
-
+					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">{% if user.profile %}EDIT PROFILE{% else %}CREATE PROFILE{% endif%}</h2>
 				</div>
 				<div class="d-flex justify-content-center" style="margin-top: 20px;">
 
@@ -65,17 +58,13 @@
 						</div>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
-								<p style="color: white;">Do you want your profile to be public?</p>
+								<p style="color: white;">Do you want your stats to be public?</p>
 							</div>
 							{{form.show_stats}}
 						</div>
-
-
-
 				   		<div class="d-flex justify-content-center mt-3 login_container">
-				 			<input class="btn login_btn" type="submit" value="Create Profile">
+				 			<input class="btn login_btn" type="submit" value="{% if user.profile %}Save Changes{% else %}Create Profile{% endif%}">
 				   		</div>
-
 					</form>
 				</div>
 
