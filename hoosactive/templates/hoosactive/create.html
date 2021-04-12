@@ -8,15 +8,15 @@
 		<div class="d-flex justify-content-center h-100">
 			<div class="user_card">
 				<div class="d-flex justify-content-center">
-					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">CREATE PROFILE</h2>
+					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">{% if user.profile %}EDIT PROFILE{% else %}CREATE PROFILE{% endif%}</h2>
 				</div>
 				<div class="d-flex justify-content-center" style="margin-top: 20px;">
 
 					<form method="POST" action="">
 						{% csrf_token %}
+						<h1 style="color: white">Enter Bio:</h1>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
-								<span class="input-group-text"></span>
 							</div>
 							{{form.bio_text}}
 						</div>
@@ -58,17 +58,13 @@
 						</div>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
-								<span class="input-group-text"></span>
+								<p style="color: white;">Do you want your stats to be public?</p>
 							</div>
 							{{form.show_stats}}
 						</div>
-
-
-
 				   		<div class="d-flex justify-content-center mt-3 login_container">
-				 			<input class="btn login_btn" type="submit" value="Create Profile">
+				 			<input class="btn login_btn" type="submit" value="{% if user.profile %}Save Changes{% else %}Create Profile{% endif%}">
 				   		</div>
-
 					</form>
 				</div>
 

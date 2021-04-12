@@ -92,7 +92,7 @@ def profile(request, username):
             profile_user.profile
         except:
             if (authenticated_user == profile_user):
-                return redirect('hoosactive:create')
+                return HttpResponseRedirect('/profile/'+request.user.username+'/create/')
             else:
                 return redirect('hoosactive:index')
         else:
@@ -116,16 +116,21 @@ def profile(request, username):
         return redirect('hoosactive:login')
 
 
-def create(request):
+def create(request, username):
     user = request.user
+    if (username != user.username):
+        return HttpResponseRedirect('/profile/'+username)
     form = PostForm()
     if user.is_authenticated:
         if request.method == 'POST':
             form = PostForm(request.POST)
             if form.is_valid():
-                Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],request.POST['bio_text'],request.POST['city'],request.POST['state'])
-                #age = form.cleaned_data.get('age')
-                return redirect('hoosactive:profile')
+                if (Profile.objects.filter(user=user).count() == 0):
+                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],request.POST['bio_text'],request.POST['city'],request.POST['state'],bool(request.POST['show_stats']))
+                else:
+                    Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
+                    weight_lbs=request.POST['weight_lbs'],bio_text=request.POST['bio_text'],city=request.POST['city'],state=request.POST['state'],show_stats=bool(request.POST['show_stats']))
+                return HttpResponseRedirect('/profile/'+request.user.username)
 
         context = {'form': form}
         return render(request, 'hoosactive/create.html', context)

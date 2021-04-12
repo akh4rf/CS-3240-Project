@@ -18,10 +18,12 @@
   <script src="{% static 'hoosactive/script.js' %}"></script>
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <!-- Google Charts -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 
 <nav class="navbar navbar-light" style="background-color: #1E355D;">
-  <a style="" href="{% url 'hoosactive:index' %}">
+  <a href="{% url 'hoosactive:index' %}">
     <div style="position: relative; float: left; height: 60px; width: calc(100px*16/9); margin-left: 25px;">
       <img style="max-width:100%; max-height:100%;" src="{% static 'hoosactive/images/hoosactive_logo.png' %}" alt="">
     </div>
