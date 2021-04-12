@@ -66,8 +66,8 @@ class Profile(models.Model):
 
 
 class EntryManager(models.Manager):
-    def create_entry(self, us, ex, dt, cal, dur):
-        entry = self.create(user=us,exercise=ex,date=dt,calories=cal,duration_hours=dur)
+    def create_entry(self, us, un, ci, ex, dt, cal, dur):
+        entry = self.create(user=us,username=un,city=ci,exercise=ex,date=dt,calories=cal,duration_hours=dur)
         if not us.profile.does_exercise(ex):
             us.profile.add_exercise(ex)
         return entry

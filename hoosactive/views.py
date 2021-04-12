@@ -34,7 +34,7 @@ def log_exercise(request):
     user = request.user
     if request.method == 'POST':
         exer = Exercise.objects.get(name=request.POST['drop'])
-        entry = Entry.objects.create_entry(user,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
+        entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
         return redirect('hoosactive:index')
 
 def schedule_workout(request):
