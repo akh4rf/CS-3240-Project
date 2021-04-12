@@ -35,6 +35,7 @@
         </tbody>
       </table>
 
+      {% if user == profile_user %}
       <!-- Button meant to open Modal to adding exercise. -->
       <button style="font-size: 25px;" class="bi bi-plus-circle col-8 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#AddExerciseModal"> ADD EXERCISE </button>
       <!-- Modal in base.html -->
@@ -42,41 +43,33 @@
       <!-- Button meant to direct to workout scheduler. -->
       <button style="font-size: 25px;" class="bi bi-calendar-date col-8 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#ScheduleWorkoutModal"> SCHEDULE WORKOUT </button>
       <!-- Modal in base.html -->
+      {% endif %}
 
     </div>
     <div class="col mt-5">
       <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
 
-      {% if user.first_name %}
-      <p class="font-weight-bold" style="font-size:30px;color:black;">{{ user.first_name }} {{ user.last_name }}</p>
+      {% if profile_user.first_name %}
+      <p style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
       {% else %}
-      <p class="font-weight-bold" style="font-size:30px;color:black;">{{ user.username }}</p>
+      <p style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.username }}</p>
       {% endif %}
 
-      <p style="font-size:20px;color:gray;">{{ user.profile.bio_text }}</p>
-      <p style="font-size:20px;color:gray;">Age: {{ user.profile.age }}, Birthday: {{ user.profile.birthday }}</p>
-      <p style="font-size:20px;color:gray;">Height: {{ user.profile.height_feet }}' {{ user.profile.height_inches }}", Weight: {{ user.profile.weight_lbs }} lbs</p>
-      <p style="font-size:20px;color:gray;">{{ user.profile.city }}, {{ user.profile.state }}</p>
+      <!-- <p style="font-size:20px;color:gray;">{{ profile_user.bio_text }}</p>
+      <p style="font-size:20px;color:gray;">Age: {{ profile_user.age }}, Birthday: {{ profile_user.birthday }}</p>
+      <p style="font-size:20px;color:gray;">Height: {{ profile_user.height_feet }}' {{ profile_user.height_inches }}", Weight: {{ profile_user.weight_lbs }} lbs</p>
+      <p style="font-size:20px;color:gray;">{{ profile_user.city }}, {{ profile_user.state }}</p> -->
+
       <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
-      <button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#SettingsModal">Settings</button>
-      <!-- Settings Modal -->
-      <div id="SettingsModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Settings</h5>
-            </div>
-            <div class="modal-body">
-              <a href="/create"><button class="col-8 m-3 p-3 btn btn-outline-primary font-weight-bold">Edit Profile</button></a>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+      {% if user == profile_user %}
+      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
+      {% else %}
+      {% if is_friend %}
+      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Remove Friend</button></a>
+      {% else %}
+      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Send Friend Request</button></a>
+      {% endif %}
+      {% endif %}
     </div>
   </div>
 
