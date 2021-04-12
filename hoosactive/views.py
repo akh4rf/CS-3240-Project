@@ -148,15 +148,23 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe):
     # Docs => https://docs.djangoproject.com/en/3.1/topics/db/aggregation/#values #
     # Extra Help => https://stackoverflow.com/questions/50052902/combine-2-object-of-same-model-django #
 
+    sortdict = {
+        'duration_hours': 'total_time',
+        'calories': 'total_cals'
+    }
+
     entry_list = Entry.objects.filter(
         exercise=exercise.id
     ).filter(
         date__gte=timezone.now()-datetime.timedelta(days=timedict[timeframe])
     ).values(
-        'user'
+        'username',
+        'city'
     ).annotate(
         total_cals=Sum('calories'),
         total_time=Sum('duration_hours'),
+    ).order_by(
+        '-'+sortdict[sort]
     )
 
     return render(request, 'hoosactive/leaderboard.html', {

@@ -75,6 +75,10 @@ class EntryManager(models.Manager):
 class Entry(models.Model):
     # Foreign Key to related User
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Username
+    username = models.CharField(max_length=150,default="")
+    # City
+    city = models.CharField(max_length=100)
     # Foreign Key to related Exercise
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     # Log Date

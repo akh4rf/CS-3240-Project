@@ -22,7 +22,7 @@
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         {% for exer in exercise_list %}
-        <a class="dropdown-item" href="/leaderboard/{{ exer.name }}/calories/day">{{ exer.name }}</a>
+        <a class="dropdown-item" href="/leaderboard/{{ exer.name }}/calories/{{ timeframe }}">{{ exer.name }}</a>
         {% endfor %}
       </div>
     </div>
@@ -70,8 +70,8 @@
           {% for entry in entry_list %}
           <div class="bg-white" style="color: black; padding: 10px;">
             <div class="leaderboard-flex-table">
-              <div>{{ entry.user.username }}</div>
-              <div>{{ entry.user.profile.city }}</div>
+              <div>{{ entry.username }}</div>
+              <div>{{ entry.city }}</div>
               <div>{{ entry.total_cals }}</div>
               <div>{{ entry.total_time }}</div>
             </div>
