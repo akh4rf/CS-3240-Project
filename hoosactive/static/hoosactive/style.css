@@ -105,5 +105,15 @@ div {
     flex: 50% !important;
 }
 
+.profile-chart-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-evenly;
+}
+
+.profile-chart-bar:hover {
+  background: #007BFF !important;
+}
+
 .bg-white {background-color: white;}
 .bg-blue {background-color: #1E355D;}
