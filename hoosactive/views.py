@@ -108,6 +108,7 @@ def profile(request, username):
                 is_friend = True
 
             stat_dict = {}
+            max_cals = 0
 
             for i in range(0,7):
                 date = timezone.now()-datetime.timedelta(days=6-i)
@@ -127,6 +128,7 @@ def profile(request, username):
                 if (aggregate.count() != 0):
                     cals_burned = aggregate[0]['total_cals']
                     stat_dict[day_of_week] = (int(cals_burned), dm_format)
+                    max_cals = max(int(cals_burned), max_cals)
                 else:
                     stat_dict[day_of_week] = (0, dm_format)
 
@@ -135,7 +137,9 @@ def profile(request, username):
               'workout_blank': range(0,5-workout_list.count()),
               'profile_user': profile_user,
               'is_friend': is_friend,
-              'stat_dict': stat_dict
+              'stat_dict': stat_dict,
+              'max_cals': max_cals,
+              'exercise_list': Exercise.objects.order_by('name')
             })
     else:
         return redirect('hoosactive:login')
