@@ -14,6 +14,7 @@ from django.utils import timezone
 import datetime
 from django.db.models import Sum
 from .decorators import created_profile
+from django.core import serializers
 
 def index(request):
     if (request.user.is_authenticated):
@@ -106,11 +107,35 @@ def profile(request, username):
             if profile_user in authenticated_user.profile.friends.all():
                 is_friend = True
 
+            stat_dict = {}
+
+            for i in range(0,7):
+                date = timezone.now()-datetime.timedelta(days=6-i)
+                day_of_week = date.strftime('%a')
+                dm_format = date.strftime('%-m') + '/' + date.strftime('%-d')
+
+                aggregate = Entry.objects.filter(
+                    user=profile_user.id
+                ).filter(
+                    date__day=date.day
+                ).values(
+                    'username',
+                ).annotate(
+                    total_cals=Sum('calories'),
+                )
+
+                if (aggregate.count() != 0):
+                    cals_burned = aggregate[0]['total_cals']
+                    stat_dict[day_of_week] = (int(cals_burned), dm_format)
+                else:
+                    stat_dict[day_of_week] = (0, dm_format)
+
             return render(request, 'hoosactive/profile.html', {
               'workout_list': workout_list,
               'workout_blank': range(0,5-workout_list.count()),
               'profile_user': profile_user,
-              'is_friend': is_friend
+              'is_friend': is_friend,
+              'stat_dict': stat_dict
             })
     else:
         return redirect('hoosactive:login')
