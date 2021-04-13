@@ -14,9 +14,9 @@
           <text>Calories Burned Per Day</text>
             <div class="profile-chart-row" style="height: 224px; align-items: flex-end;">
               {% for day, cals in stat_dict.items %}
-              <div style="width: calc(100%/7); height: calc(200px*{{ cals.0 }}/1000 + 24px); padding: 0 0.3%;">
+              <div style="width: calc(100%/7); height: calc(200px*{{ cals.0 }}/{{ max_cals }} + 24px); padding: 0 0.3%;">
                 <text>{{ cals.0 }}</text>
-                <div class="profile-chart-bar" style="background: #007BFFC5; width: 100%; height: calc(200px*{{ cals.0 }}/1000);"></div>
+                <div class="profile-chart-bar" style="background: #007BFFC5; width: 100%; height: calc(200px*{{ cals.0 }}/{{ max_cals }});"></div>
               </div>
               {% endfor %}
             </div>
