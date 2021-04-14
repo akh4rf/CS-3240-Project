@@ -79,15 +79,23 @@
 
 <script>
 	var form_fields = document.getElementsByTagName('input')
-
-    form_fields[2].placeholder='Age...';
-    form_fields[3].placeholder='Height (ft)...';
-    form_fields[4].placeholder='Height (inches)...';
-    form_fields[5].placeholder='Weight (lbs)...';
-    form_fields[6].placeholder='City...';
-    form_fields[7].placeholder='State...';
-    form_fields[8].placeholder='Public Profile...';
-	for (var field in form_fields){
+	var prof = '{{user.profile}}'
+	if (prof) {
+		form_fields[2].defaultValue='{{user.profile.age}}';
+		form_fields[3].defaultValue='{{user.profile.height_feet}}';
+		form_fields[4].defaultValue='{{user.profile.height_inches}}';
+		form_fields[5].defaultValue='{{user.profile.weight_lbs}}';
+		form_fields[6].defaultValue='{{user.profile.city}}';
+		form_fields[7].defaultValue='{{user.profile.state}}';
+	}
+	form_fields[2].placeholder='Age...';
+	form_fields[3].placeholder='Height (ft)...';
+	form_fields[4].placeholder='Height (inches)...';
+	form_fields[5].placeholder='Weight (lbs)...';
+	form_fields[6].placeholder='City...';
+	form_fields[7].placeholder='State...';
+	
+	for (var field in form_fields) {
       form_fields[field].className += ' form-control'
     }
 </script>

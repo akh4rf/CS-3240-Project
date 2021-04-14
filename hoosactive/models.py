@@ -40,9 +40,9 @@ class Profile(models.Model):
     # Profile Picture
     #profile_picture = models.ImageField()
     # Bio
-    bio_text = models.TextField()
+    bio_text = models.TextField(max_length=150)
     # City
-    city = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
     # State
     state = models.CharField(max_length=2)
 
