@@ -6,7 +6,7 @@
   {% if user.is_authenticated %}
   <br></br>
   <div class="row no-gutters">
-    <div class="col">
+    <div class="col mt-5">
 
       <!-- This is a chart. -->
       <div style="width: 100%;">
@@ -50,15 +50,14 @@
       <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
 
       {% if profile_user.first_name %}
-      <p style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+      <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
       {% else %}
-      <p style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.username }}</p>
+      <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.username }}</p>
       {% endif %}
 
-      <!-- <p style="font-size:20px;color:gray;">{{ profile_user.bio_text }}</p>
-      <p style="font-size:20px;color:gray;">Age: {{ profile_user.age }}, Birthday: {{ profile_user.birthday }}</p>
-      <p style="font-size:20px;color:gray;">Height: {{ profile_user.height_feet }}' {{ profile_user.height_inches }}", Weight: {{ profile_user.weight_lbs }} lbs</p>
-      <p style="font-size:20px;color:gray;">{{ profile_user.city }}, {{ profile_user.state }}</p> -->
+      <p class="px-5" style="font-size:20px;color:gray;">{{ profile_user.profile.bio_text }}</p>
+      <p style="font-size:20px;color:gray;">{{ profile_user.profile.age }}  -  {{ profile_user.profile.height_feet }}' {{ profile_user.profile.height_inches }}"  -  {{ profile_user.profile.weight_lbs }} lbs</p>
+      <p style="font-size:20px;color:gray;">{{ profile_user.profile.city }}, {{ profile_user.profile.state }}</p>
 
       <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
       {% if user == profile_user %}
