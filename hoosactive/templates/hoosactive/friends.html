@@ -1,0 +1,36 @@
+{% extends "hoosactive/base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="row no-gutters">
+    <div class="col">
+        <form class="m-4" action="{% url 'hoosactive:search' %}" method="GET">
+            <button class="p-1 pb-3 btn btn-outline-none" type="submit"><i class="bi bi-search"></i></button> 
+            <input class="col-8" style="font-size: 18px;" type="text" placeholder="Search Username..." name="search_profile">
+        </form>
+    </div>
+
+    <div class="col">
+        <button style="font-size: 18px; float: right;" class="m-3 btn btn-outline-none font-weight-bold" data-toggle="modal" data-target="#FriendRequestsModal">Friend Requests</button>
+    </div>
+</div>
+
+<!-- Friend Request Modal -->
+<div id="FriendRequestsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Friend Requests</h5>
+        </div>
+        <div class="modal-body">
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

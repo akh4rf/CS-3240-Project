@@ -59,7 +59,7 @@
       <p style="font-size:20px;color:gray;">{{ profile_user.profile.age }}  -  {{ profile_user.profile.height_feet }}' {{ profile_user.profile.height_inches }}"  -  {{ profile_user.profile.weight_lbs }} lbs</p>
       <p style="font-size:20px;color:gray;">{{ profile_user.profile.city }}, {{ profile_user.profile.state }}</p>
 
-      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
+      <a href="/profile/{{ user.username }}/friends/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
       {% if user == profile_user %}
       <a href="/profile/{{ user.username }}/update/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
       {% else %}

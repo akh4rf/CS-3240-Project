@@ -16,6 +16,7 @@ urlpatterns = [
     path('profile/<str:username>/update/', views.create, name='update'),
     path('register/', views.register, name="register"),
     path('leaderboard/', views.leaderboard, name="leaderboard"),
-    path('leaderboard/<str:exercise_name>/<str:sort>/<str:timeframe>/', views.exercise_leaderboard, name="exercise_leaderboard")
-
+    path('leaderboard/<str:exercise_name>/<str:sort>/<str:timeframe>/', views.exercise_leaderboard, name="exercise_leaderboard"),
+    path('profile/<str:username>/friends/', views.friends, name='friends'),
+    path('search/', views.search, name='search')
 ]
