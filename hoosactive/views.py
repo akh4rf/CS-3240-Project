@@ -144,6 +144,22 @@ def profile(request, username):
     else:
         return redirect('hoosactive:login')
 
+def friends(request, username):
+    authenticated_user = request.user
+    profile_user = User.objects.get(username=username)
+
+    if authenticated_user.is_authenticated:
+        try:
+            x = profile_user.profile
+        except:
+            if (authenticated_user == profile_user):
+                return HttpResponseRedirect('/profile/'+request.user.username+'/create/')
+            else:
+                return redirect('hoosactive:index')
+        else:
+            x = x
+    return render(request, "hoosactive/friends.html", {
+    })
 
 def create(request, username):
     user = request.user
@@ -208,3 +224,12 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe):
         'entry_list': entry_list,
         'timeframe': timeframe,
     })
+
+
+def search(request):
+    try:
+        profile_user = User.objects.get(username=request.GET['search_profile'])
+    except:
+        return HttpResponseRedirect('/profile/'+request.user.username+"/friends/")
+    else:
+        return HttpResponseRedirect('/profile/'+profile_user.username)
