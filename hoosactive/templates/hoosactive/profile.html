@@ -56,8 +56,7 @@
       {% endif %}
 
       <p class="px-5" style="font-size:20px;color:gray;">{{ profile_user.profile.bio_text }}</p>
-      <p style="font-size:20px;color:gray;">Age: {{ profile_user.profile.age }}, Birthday: {{ profile_user.profile.birthday }}</p>
-      <p style="font-size:20px;color:gray;">Height: {{ profile_user.profile.height_feet }}' {{ profile_user.profile.height_inches }}", Weight: {{ profile_user.profile.weight_lbs }} lbs</p>
+      <p style="font-size:20px;color:gray;">{{ profile_user.profile.age }}  -  {{ profile_user.profile.height_feet }}' {{ profile_user.profile.height_inches }}"  -  {{ profile_user.profile.weight_lbs }} lbs</p>
       <p style="font-size:20px;color:gray;">{{ profile_user.profile.city }}, {{ profile_user.profile.state }}</p>
 
       <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
