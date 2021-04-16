@@ -7,8 +7,8 @@ app_name = 'hoosactive'
 urlpatterns = [
 
     path('', views.index, name='index'),
-    path('log-exercise/', views.log_exercise, name='log_exercise'),
-    path('schedule-workout/', views.schedule_workout, name='schedule_workout'),
+    path('log-exercise/<str:redir>/', views.log_exercise, name='log_exercise'),
+    path('schedule-workout/<str:redir>/', views.schedule_workout, name='schedule_workout'),
     path('login/', views.login, name='login'),
     path('profile/', views.profile_noname, name='profile_noname'),
     path('profile/<str:username>', views.profile, name='profile'),

@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
 from .forms import CreateUserForm, PostForm
@@ -28,21 +28,28 @@ def index(request):
     return render(request, 'hoosactive/index.html', {
         'exercise_list': Exercise.objects.order_by('name'),
         'workout_list': workout_list,
-        'workout_blank': range(0,5-count)
+        'workout_blank': range(0,5-count),
+        'redirect': 'index'
     })
 
-def log_exercise(request):
+def log_exercise(request, redir):
     user = request.user
-    if request.method == 'POST':
-        exer = Exercise.objects.get(name=request.POST['drop'])
-        entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
-        return redirect('hoosactive:index')
+    if (user.is_authenticated):
+        if request.method == 'POST':
+            exer = Exercise.objects.get(name=request.POST['drop'])
+            entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
+            return redirect('hoosactive:'+redir)
+    else:
+        return redirect('hoosactive:login')
 
-def schedule_workout(request):
+def schedule_workout(request, redir):
     user = request.user
-    if request.method == 'POST':
-        workout = Workout.objects.schedule_workout(user,request.POST['description'],request.POST['date'])
-        return redirect('hoosactive:index')
+    if (user.is_authenticated):
+        if request.method == 'POST':
+            workout = Workout.objects.schedule_workout(user,request.POST['description'],request.POST['date'])
+            return redirect('hoosactive:'+redir)
+    else:
+        return redirect('hoosactive:login')
 
 def register(request):
     if request.user.is_authenticated:
@@ -139,7 +146,8 @@ def profile(request, username):
               'is_friend': is_friend,
               'stat_dict': stat_dict,
               'max_cals': max_cals,
-              'exercise_list': Exercise.objects.order_by('name')
+              'exercise_list': Exercise.objects.order_by('name'),
+              'redirect': 'profile_noname'
             })
     else:
         return redirect('hoosactive:login')
