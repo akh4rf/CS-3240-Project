@@ -67,64 +67,6 @@
 
 {% block content %}{% endblock %}
 
-<!-- Add Exercise Modal -->
-<div id="AddExerciseModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add Exercise</h5>
-      </div>
-      <div class="modal-body">
-        <form action="{% url 'hoosactive:log_exercise' %}" method="post">
-          {% csrf_token %}
-          <select name="drop" class="form-control">
-            <option value="" selected disabled>Select Exercise Type</option>
-            {% for exercise in exercise_list %}
-            <option value="{{ exercise.name }}">{{ exercise.name }}</option>
-            {% endfor %}
-          </select>
-          <label for="date">Timestamp</label>
-          <input class="my-2 form-control" type="datetime-local" name="date" id="date">
-          <label for="duration">Duration</label>
-          <input class="my-2 form-control" type="number" placeholder="0.00" name="duration" id="duration" step="0.01">
-          <label for="calories_burned">Calories Burned</label>
-          <input class="my-2 form-control" type="number" placeholder="000" name="calories_burned" id="calories_burned">
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <input type="submit" class="btn btn-primary" value="Log Exercise">
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Schedule Workout Modal -->
-<div id="ScheduleWorkoutModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Schedule Workout</h5>
-      </div>
-      <div class="modal-body">
-        <form action="{% url 'hoosactive:schedule_workout' %}" method="post">
-          {% csrf_token %}
-          <label for="description">Workout Name</label>
-          <input class="my-2 form-control" placeholder='e.g. "1-Mile Run"' name="description" id="description">
-          <label for="date">Timestamp</label>
-          <input class="my-2 form-control" type="datetime-local" name="date" id="date">
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <input type="submit" class="btn btn-primary" value="Schedule">
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
 <footer></footer>
 <!-- Bootstrap popper.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
