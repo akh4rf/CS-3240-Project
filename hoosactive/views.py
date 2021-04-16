@@ -240,4 +240,9 @@ def search(request):
     except:
         return HttpResponseRedirect('/profile/'+request.user.username+"/friends/")
     else:
-        return HttpResponseRedirect('/profile/'+profile_user.username)
+        try:
+            profile_user.profile
+        except:
+            return HttpResponseRedirect('/profile/'+request.user.username+"/friends/")
+        else:
+            return HttpResponseRedirect('/profile/'+profile_user.username)

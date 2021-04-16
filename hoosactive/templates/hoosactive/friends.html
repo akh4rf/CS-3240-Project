@@ -15,6 +15,15 @@
     </div>
 </div>
 
+
+<!-- Example Friends Buttons -->
+<button class="btn-light mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
+    <img style="border-radius: 50%; width:75px; height:75px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
+    <p style="font-size: 20px" class="col mx-auto my-auto">iangsohan</p>
+    <p style="font-size: 20px" class="col mx-auto my-auto">Woodstock, CT</p>
+</button>
+
+
 <!-- Friend Request Modal -->
 <div id="FriendRequestsModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -23,8 +32,16 @@
         <div class="modal-header">
           <h5 class="modal-title">Friend Requests</h5>
         </div>
-        <div class="modal-body">
-
+        <div>
+            <!-- Example Friend Request -->
+            <div class="mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
+                <img style="border-radius: 50%; width:50px; height:50px;" class="mr-4" src="{% static 'hoosactive/images/empty-profile.png' %}">
+                <p style="font-size: 14px" class="col mx-auto my-auto">iangsohan</p>
+                <p style="font-size: 28px" class="col mx-auto my-auto">
+                    <i style="color: green" class="bi bi-check-circle-fill"></i>
+                    <i style="color: red" class="bi bi-x-circle-fill"></i>
+                </p>
+            </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
