@@ -1,50 +1,50 @@
 {% extends "hoosactive/base.html" %}
 {% block content %}
 {% load static %}
+<body style="background-color: #EEEEEE;">
+  <div style="height: 100%; text-align: center; background-color: #EEEEEE;">
+    {% if user.is_authenticated %}
+    <br></br>
+    <div class="row no-gutters" style="background-color: #EEEEEE;">
+      <div class="col mt-5">
 
-<div style="height: 100%; text-align: center;">
-  {% if user.is_authenticated %}
-  <br></br>
-  <div class="row no-gutters">
-    <div class="col mt-5">
-
-      <!-- This is a chart. -->
-      <div style="width: 100%;">
-        <div style="width: 500px; margin: auto;">
-          <text>Calories Burned Per Day</text>
-            <div class="profile-chart-row" style="height: 224px; align-items: flex-end;">
-              {% for day, cals in stat_dict.items %}
-              <div style="width: calc(100%/7); height: calc(200px*{{ cals.0 }}/{{ max_cals }} + 24px); padding: 0 0.3%;">
-                <text>{{ cals.0 }}</text>
-                <div class="profile-chart-bar" style="background: #007BFFC5; width: 100%; height: calc(200px*{{ cals.0 }}/{{ max_cals }});"></div>
+        <!-- This is a chart. -->
+        <div style="width: 100%;background-color: #EEEEEE;">
+          <div style="width: 500px; margin: auto;background-color: #EEEEEE;">
+            <text>Calories Burned Per Day</text>
+              <div class="profile-chart-row" style="height: 224px; align-items: flex-end;background-color: #EEEEEE;">
+                {% for day, cals in stat_dict.items %}
+                <div style="width: calc(100%/7); height: calc(200px*{{ cals.0 }}/{{ max_cals }} + 24px); padding: 0 0.3%;background-color: #EEEEEE;">
+                  <text>{{ cals.0 }}</text>
+                  <div class="profile-chart-bar" style="background: #EEEEEE; width: 100%; height: calc(200px*{{ cals.0 }}/{{ max_cals }});"></div>
+                </div>
+                {% endfor %}
               </div>
+            <hr style="margin: 0; height: 1px; background: black;">
+            <div class="profile-chart-row" style="align-items: flex-start;">
+              {% for day, cals in stat_dict.items %}
+              <text style="width: calc(100%/7); padding: 0 0.3%;">{{ day }}</text>
               {% endfor %}
             </div>
-          <hr style="margin: 0; height: 1px; background: black;">
-          <div class="profile-chart-row" style="align-items: flex-start;">
-            {% for day, cals in stat_dict.items %}
-            <text style="width: calc(100%/7); padding: 0 0.3%;">{{ day }}</text>
-            {% endfor %}
-          </div>
-          <div class="profile-chart-row" style="align-items: flex-start;">
-            {% for day, cals in stat_dict.items %}
-            <text style="width: calc(100%/7); padding: 0 0.3%;">{{ cals.1 }}</text>
-            {% endfor %}
+            <div class="profile-chart-row" style="align-items: flex-start;">
+              {% for day, cals in stat_dict.items %}
+              <text style="width: calc(100%/7); padding: 0 0.3%;">{{ cals.1 }}</text>
+              {% endfor %}
+            </div>
           </div>
         </div>
+
+        {% if user == profile_user %}
+        <!-- Button meant to open Modal to adding exercise. -->
+        <button style="font-size: 25px;" class="bi bi-plus-circle col-8 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#AddExerciseModal"> ADD EXERCISE </button>
+        <!-- Modal in base.html -->
+
+        <!-- Button meant to direct to workout scheduler. -->
+        <button style="font-size: 25px;" class="bi bi-calendar-date col-8 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#ScheduleWorkoutModal"> SCHEDULE WORKOUT </button>
+        <!-- Modal in base.html -->
+        {% endif %}
+
       </div>
-
-      {% if user == profile_user %}
-      <!-- Button meant to open Modal to adding exercise. -->
-      <button style="font-size: 25px;" class="bi bi-plus-circle col-8 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#AddExerciseModal"> ADD EXERCISE </button>
-      <!-- Modal in base.html -->
-
-      <!-- Button meant to direct to workout scheduler. -->
-      <button style="font-size: 25px;" class="bi bi-calendar-date col-8 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#ScheduleWorkoutModal"> SCHEDULE WORKOUT </button>
-      <!-- Modal in base.html -->
-      {% endif %}
-
-    </div>
 
     <div class="col mt-5">
       <img style="border-radius: 50%;width:200px;height:200px;" src="{{profile_user.profile.profile_pic.url}}">
@@ -61,82 +61,83 @@
       <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.username }}</p>
       {% endif %}
 
-      <p class="px-5" style="font-size:20px;color:gray;">{{ profile_user.profile.bio_text }}</p>
-      <p style="font-size:20px;color:gray;">{{ profile_user.profile.age }}  -  {{ profile_user.profile.height_feet }}' {{ profile_user.profile.height_inches }}"  -  {{ profile_user.profile.weight_lbs }} lbs</p>
-      <p style="font-size:20px;color:gray;">{{ profile_user.profile.city }}, {{ profile_user.profile.state }}</p>
 
-      <a href="/profile/{{ user.username }}/friends/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
-      {% if user == profile_user %}
-      <a href="/profile/{{ user.username }}/update/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
-      {% else %}
-      {% if is_friend %}
-      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Remove Friend</button></a>
-      {% else %}
-      <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Send Friend Request</button></a>
-      {% endif %}
-      {% endif %}
+        <p class="px-5" style="font-size:20px;color:gray;">{{ profile_user.profile.bio_text }}</p>
+        <p style="font-size:20px;color:gray;">{{ profile_user.profile.age }}  -  {{ profile_user.profile.height_feet }}' {{ profile_user.profile.height_inches }}"  -  {{ profile_user.profile.weight_lbs }} lbs</p>
+        <p style="font-size:20px;color:gray;">{{ profile_user.profile.city }}, {{ profile_user.profile.state }}</p>
+
+        <a href="/profile/{{ user.username }}/friends/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
+        {% if user == profile_user %}
+        <a href="/profile/{{ user.username }}/update/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
+        {% else %}
+        {% if is_friend %}
+        <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Remove Friend</button></a>
+        {% else %}
+        <a href=""><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Send Friend Request</button></a>
+        {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    {% endif %}
+  </div>
+
+  <!-- Add Exercise Modal -->
+  <div id="AddExerciseModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Exercise</h5>
+        </div>
+        <div class="modal-body">
+          <form action="{% url 'hoosactive:log_exercise' redirect %}" method="post">
+            {% csrf_token %}
+            <select name="drop" class="form-control">
+              <option value="" selected disabled>Select Exercise Type</option>
+              {% for exercise in exercise_list %}
+              <option value="{{ exercise.name }}">{{ exercise.name }}</option>
+              {% endfor %}
+            </select>
+            <label for="date">Timestamp</label>
+            <input class="my-2 form-control" type="datetime-local" name="date" id="date">
+            <label for="duration">Duration</label>
+            <input class="my-2 form-control" type="number" placeholder="0.00" name="duration" id="duration" step="0.01">
+            <label for="calories_burned">Calories Burned</label>
+            <input class="my-2 form-control" type="number" placeholder="000" name="calories_burned" id="calories_burned">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <input type="submit" class="btn btn-primary" value="Log Exercise">
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 
-  {% endif %}
-</div>
-
-<!-- Add Exercise Modal -->
-<div id="AddExerciseModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add Exercise</h5>
-      </div>
-      <div class="modal-body">
-        <form action="{% url 'hoosactive:log_exercise' redirect %}" method="post">
-          {% csrf_token %}
-          <select name="drop" class="form-control">
-            <option value="" selected disabled>Select Exercise Type</option>
-            {% for exercise in exercise_list %}
-            <option value="{{ exercise.name }}">{{ exercise.name }}</option>
-            {% endfor %}
-          </select>
-          <label for="date">Timestamp</label>
-          <input class="my-2 form-control" type="datetime-local" name="date" id="date">
-          <label for="duration">Duration</label>
-          <input class="my-2 form-control" type="number" placeholder="0.00" name="duration" id="duration" step="0.01">
-          <label for="calories_burned">Calories Burned</label>
-          <input class="my-2 form-control" type="number" placeholder="000" name="calories_burned" id="calories_burned">
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <input type="submit" class="btn btn-primary" value="Log Exercise">
-          </div>
-        </form>
+  <!-- Schedule Workout Modal -->
+  <div id="ScheduleWorkoutModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Schedule Workout</h5>
+        </div>
+        <div class="modal-body">
+          <form action="{% url 'hoosactive:schedule_workout' redirect %}" method="post">
+            {% csrf_token %}
+            <label for="description">Workout Name</label>
+            <input class="my-2 form-control" placeholder='e.g. "1-Mile Run"' name="description" id="description">
+            <label for="date">Timestamp</label>
+            <input class="my-2 form-control" type="datetime-local" name="date" id="date">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <input type="submit" class="btn btn-primary" value="Schedule">
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- Schedule Workout Modal -->
-<div id="ScheduleWorkoutModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Schedule Workout</h5>
-      </div>
-      <div class="modal-body">
-        <form action="{% url 'hoosactive:schedule_workout' redirect %}" method="post">
-          {% csrf_token %}
-          <label for="description">Workout Name</label>
-          <input class="my-2 form-control" placeholder='e.g. "1-Mile Run"' name="description" id="description">
-          <label for="date">Timestamp</label>
-          <input class="my-2 form-control" type="datetime-local" name="date" id="date">
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <input type="submit" class="btn btn-primary" value="Schedule">
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
+</body>
 {% endblock %}
