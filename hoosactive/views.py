@@ -120,7 +120,7 @@ def profile(request, username):
             for i in range(0,7):
                 date = timezone.now()-datetime.timedelta(days=6-i)
                 day_of_week = date.strftime('%a')
-                dm_format = date.strftime('%-m') + '/' + date.strftime('%-d')
+                dm_format = date.strftime('%m') + '/' + date.strftime('%d')
 
                 aggregate = Entry.objects.filter(
                     user=profile_user.id
