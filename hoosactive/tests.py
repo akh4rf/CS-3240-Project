@@ -1,8 +1,10 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from hoosactive.models import Entry, Exercise
+from . import views
 from datetime import datetime
 from django.utils import timezone
+from django.urls import reverse
 import pytz
 
 
@@ -158,3 +160,46 @@ class DeletedTest(TestCase):
         user.delete()
         logged_in = c.login(username='testuser', password='!Password1')
         self.assertFalse(logged_in)
+
+
+# Test if the Entered Fitness data is correctly counted in the cumulative "score"
+class LeaderboardTest(TestCase):
+
+    # Correctly Setup User
+    def setUp(self):
+        # User Setup
+        User = get_user_model()
+        user1 = User.objects.create(username='testuser')
+        user1.set_password('!Password1')
+        user1.save()
+        user2 = User.objects.create(username='testuser2')
+        user2.set_password('!Password1')
+        user2.save()
+        # Exercise Setup
+        Exercise.objects.create(name="Running", description="")
+        Exercise.objects.create(name="Push-Ups", description="")
+
+    # Test if leaderboard request is handled correctly for signed in user
+    def test_leaderboard_response(self):
+        c = Client()
+        c.login( username = 'testuser', password = '!Password1' )
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
+            "Running", "calories", "week" ] ) )
+        self.assertEquals( response.status_code, 200 )
+
+
+    # Test to see if the score is posted to leaderboard
+    def test_correct_score(self):
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+        exercise = Exercise.objects.get(name="Running")
+        date = pytz.utc.localize(datetime.now())
+        Entry.objects.create(user=user, exercise=exercise, date=date, calories=1000, duration_hours=35)
+        Entry.objects.create(user=user, exercise=exercise, date=date, calories=450, duration_hours=45)
+
+        c = Client()
+        c.login( username = 'testuser', password = '!Password1' )
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
+            "Running", "calories", "week" ] ) )
+        entry_list = response.context['entry_list']
+        self.assertEquals( entry_list[0]['total_cals'], 1450 )
