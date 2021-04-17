@@ -47,8 +47,13 @@
     </div>
 
     <div class="col mt-5">
-      <img style="border-radius: 50%;width:200px;height:200px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
+      <img style="border-radius: 50%;width:200px;height:200px;" src="{{profile_user.profile_picture.url}}">
+      <form method="POST" action="" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{picture_form.profile_pic}}
 
+			<input class="btn btn-primary" type="submit" name="Update Information">
+			</form>
       {% if profile_user.first_name %}
       <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
       {% else %}

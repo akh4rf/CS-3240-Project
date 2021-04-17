@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse, resolve
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
-from .forms import CreateUserForm, PostForm
+from .forms import CreateUserForm, PostForm, ChangePictureForm
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login as auth_login
 from django.contrib import messages
@@ -104,6 +104,7 @@ def profile(request, username):
             else:
                 return redirect('hoosactive:index')
         else:
+            picture_form = ChangePictureForm(authenticated_user.profile)
             workout_list = profile_user.workout_set.filter(
                 date__gt=timezone.now()
             ).order_by(
@@ -147,6 +148,7 @@ def profile(request, username):
               'stat_dict': stat_dict,
               'max_cals': max_cals,
               'exercise_list': Exercise.objects.order_by('name'),
+                'picture_form': picture_form,
               'redirect': 'profile_noname'
             })
     else:
