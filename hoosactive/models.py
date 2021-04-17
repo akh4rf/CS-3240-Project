@@ -40,7 +40,7 @@ class Profile(models.Model):
     # Weight
     weight_lbs = models.DecimalField(decimal_places=1,max_digits=4)
     # Profile Picture
-    #profile_picture = models.ImageField()
+    profile_pic = models.ImageField(default="default1.jpg", null=True, blank=True)
     # Bio
     bio_text = models.TextField(max_length=150)
     # City
