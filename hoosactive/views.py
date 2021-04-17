@@ -105,6 +105,10 @@ def profile(request, username):
                 return redirect('hoosactive:index')
         else:
             picture_form = ChangePictureForm(instance=profile_user.profile)
+            if request.method == 'POST':
+                picture_form = ChangePictureForm(request.POST, request.FILES, instance=profile_user.profile)
+                if picture_form.is_valid():
+                    picture_form.save()
             workout_list = profile_user.workout_set.filter(
                 date__gt=timezone.now()
             ).order_by(
