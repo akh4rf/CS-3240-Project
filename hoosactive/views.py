@@ -104,7 +104,7 @@ def profile(request, username):
             else:
                 return redirect('hoosactive:index')
         else:
-            picture_form = ChangePictureForm(authenticated_user.profile)
+            picture_form = ChangePictureForm(instance=profile_user.profile)
             workout_list = profile_user.workout_set.filter(
                 date__gt=timezone.now()
             ).order_by(
@@ -148,7 +148,7 @@ def profile(request, username):
               'stat_dict': stat_dict,
               'max_cals': max_cals,
               'exercise_list': Exercise.objects.order_by('name'),
-                'picture_form': picture_form,
+              'picture_form': picture_form,
               'redirect': 'profile_noname'
             })
     else:
