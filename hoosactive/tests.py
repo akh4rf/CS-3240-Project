@@ -236,8 +236,6 @@ class LeaderboardTest(TestCase):
         self.assertEquals( entry_list_week[0]['total_cals'], 1000 )
 
 
-
-
     #  # Test to see if scores are in the correct order
     #  def test_correct_order(self):
         #  User = get_user_model()
@@ -277,12 +275,12 @@ class WorkoutScheduleTest(TestCase):
                                  tzinfo=pytz.UTC)
         Workout.objects.create( user=user, desc="1-mile run", date=date )
         workout = Workout.objects.get( user=user )
-        workout_string = workout.user.username + " Scheduled Exercise for " + workout1.date.strftime("%m/%d/%Y")
+        workout_string = workout.user.username + " Scheduled Exercise for " + workout.date.strftime("%m/%d/%Y")
         self.assertEquals( workout_string, "testuser Scheduled Exercise for 05/01/2021" )
 
 
     # Test multiple entries
-    def test_workout_creation(self):
+    def test_workout_creation_multiple(self):
         User = get_user_model()
         user = User.objects.get( username="testuser" )
         date1 = datetime( year=2021, month=5, day=1, hour=9, minute=0,
