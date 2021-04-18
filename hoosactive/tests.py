@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from hoosactive.models import Entry, Exercise
+from hoosactive.models import Entry, Exercise, Workout
 from . import views
 from datetime import datetime
 from django.utils import timezone
@@ -175,7 +175,6 @@ class LeaderboardTest(TestCase):
         user2 = User.objects.create(username='testuser2')
         user2.set_password('!Password1')
         user2.save()
-        # Exercise Setup
         Exercise.objects.create(name="Running", description="")
         Exercise.objects.create(name="Push-Ups", description="")
 
@@ -203,3 +202,69 @@ class LeaderboardTest(TestCase):
             "Running", "calories", "week" ] ) )
         entry_list = response.context['entry_list']
         self.assertEquals( entry_list[0]['total_cals'], 1450 )
+
+    #  # Test to see if scores are in the correct order
+    #  def test_correct_order(self):
+        #  User = get_user_model()
+        #  user1 = User.objects.get( username = 'testuser' )
+        #  user2 = User.objects.get( username = 'testuser2' )
+
+        #  exercise = Exercise.objects.get( name = "Running" )
+        #  date = pytz.utc.localize( datetime.now() )
+        #  Entry.objects.create( user=user1, exercise=exercise, date=date,
+                             #  calories=1000, duration_hours=35 )
+        #  Entry.objects.create( user=user2, exercise=exercise, date=date,
+                             #  calories=500, duration_hours=50 )
+
+        #  c = Client()
+        #  c.login( username = 'testuser', password = "!Password1" )
+        #  response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  #  args=["Running", "calories", "week"] ) )
+        #  entry_list = response.context['entry_list']
+        #  print( entry_list )
+        #  #  self.assertTrue( entry_list[0]['username'] == "testuser" )
+        #  #  self.assertTrue( entry_list[1]['username'] == "testuser2" )
+
+
+class WorkoutScheduleTest(TestCase):
+    # Setup
+    def setUp(self):
+        User = get_user_model()
+        user = User.objects.create(username='testuser')
+        user.set_password('!Password1')
+        user.save()
+
+    # Test simple workout entry
+    def test_workout_creation(self):
+        User = get_user_model()
+        user = User.objects.get( username="testuser" )
+        date = datetime( year=2021, month=5, day=1, hour=9, minute=0,
+                                 tzinfo=pytz.UTC)
+        Workout.objects.create( user=user, desc="1-mile run", date=date )
+        workout = Workout.objects.get( user=user )
+        workout_string = workout.user.username + " Scheduled Exercise for " + workout1.date.strftime("%m/%d/%Y")
+        self.assertEquals( workout_string, "testuser Scheduled Exercise for 05/01/2021" )
+
+
+    # Test multiple entries
+    def test_workout_creation(self):
+        User = get_user_model()
+        user = User.objects.get( username="testuser" )
+        date1 = datetime( year=2021, month=5, day=1, hour=9, minute=0,
+                                 tzinfo=pytz.UTC)
+        date2 = datetime( year=2021, month=5, day=2, hour=9, minute=0,
+                                 tzinfo=pytz.UTC)
+        Workout.objects.create( user=user, desc="1-mile run", date=date1 )
+        Workout.objects.create( user=user, desc="2-mile run", date=date2 )
+        workout1 = Workout.objects.get( date=date1 )
+        workout2 = Workout.objects.get( date=date2 )
+        workout_string1 = workout1.user.username + " Scheduled Exercise for " + workout1.date.strftime("%m/%d/%Y")
+        workout_string2 = workout2.user.username + " Scheduled Exercise for " + workout2.date.strftime("%m/%d/%Y")
+        self.assertEquals( workout_string1, "testuser Scheduled Exercise for 05/01/2021" )
+        self.assertEquals( workout_string2, "testuser Scheduled Exercise for 05/02/2021" )
+
+
+
+
+
+
