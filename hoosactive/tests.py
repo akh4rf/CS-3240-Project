@@ -2,9 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from hoosactive.models import Entry, Exercise, Workout
 from hoosactive.models import Entry, Exercise
-from . import views
 from datetime import datetime, timedelta
-from django.utils import timezone
 from django.urls import reverse
 import pytz
 
