@@ -1,6 +1,10 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
+<<<<<<< HEAD
 from hoosactive.models import Entry, Exercise, Workout
+=======
+from hoosactive.models import Entry, Exercise
+>>>>>>> 809b3f208ff82d80c03017c8a9b8fb071daca4f5
 from . import views
 from datetime import datetime
 from django.utils import timezone
@@ -175,6 +179,10 @@ class LeaderboardTest(TestCase):
         user2 = User.objects.create(username='testuser2')
         user2.set_password('!Password1')
         user2.save()
+<<<<<<< HEAD
+=======
+        # Exercise Setup
+>>>>>>> 809b3f208ff82d80c03017c8a9b8fb071daca4f5
         Exercise.objects.create(name="Running", description="")
         Exercise.objects.create(name="Push-Ups", description="")
 
@@ -202,6 +210,7 @@ class LeaderboardTest(TestCase):
             "Running", "calories", "week" ] ) )
         entry_list = response.context['entry_list']
         self.assertEquals( entry_list[0]['total_cals'], 1450 )
+<<<<<<< HEAD
 
     #  # Test to see if scores are in the correct order
     #  def test_correct_order(self):
@@ -268,3 +277,5 @@ class WorkoutScheduleTest(TestCase):
 
 
 
+=======
+>>>>>>> 809b3f208ff82d80c03017c8a9b8fb071daca4f5
