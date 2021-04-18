@@ -174,6 +174,12 @@ class LeaderboardTest(TestCase):
         user2 = User.objects.create(username='testuser2')
         user2.set_password('!Password1')
         user2.save()
+        user3 = User.objects.create(username='testuser3')
+        user3.set_password('!Password1')
+        user3.save()
+        user4 = User.objects.create(username='testuser4')
+        user4.set_password('!Password1')
+        user4.save()
         # Exercise Setup
         Exercise.objects.create(name="Running", description="")
         Exercise.objects.create(name="Push-Ups", description="")
@@ -204,6 +210,7 @@ class LeaderboardTest(TestCase):
         self.assertEquals( entry_list[0]['total_cals'], 1450 )
 
 
+    # Test to see if the scores are correctly sorted by date
     def test_sorting_date(self):
         User = get_user_model()
         user = User.objects.get(username='testuser')
@@ -234,28 +241,81 @@ class LeaderboardTest(TestCase):
         self.assertEquals( entry_list_week[0]['total_cals'], 1000 )
 
 
-    #  # Test to see if scores are in the correct order
-    #  def test_correct_order(self):
-        #  User = get_user_model()
-        #  user1 = User.objects.get( username = 'testuser' )
-        #  user2 = User.objects.get( username = 'testuser2' )
+    # Test to see if scores are in the correct order and sorted properly
+    def test_correct_order_two(self):
+        User = get_user_model()
+        user1 = User.objects.get( username = 'testuser' )
+        user2 = User.objects.get( username = 'testuser2' )
 
-        #  exercise = Exercise.objects.get( name = "Running" )
-        #  date = pytz.utc.localize( datetime.now() )
-        #  Entry.objects.create( user=user1, exercise=exercise, date=date,
-                             #  calories=1000, duration_hours=35 )
-        #  Entry.objects.create( user=user2, exercise=exercise, date=date,
-                             #  calories=500, duration_hours=50 )
+        exercise = Exercise.objects.get( name = "Running" )
+        date = pytz.utc.localize( datetime.now() )
+        Entry.objects.create( user=user1, username=user1.username,
+                             city="Tacoma", exercise=exercise, date=date, 
+                             calories=1000, duration_hours=35 )
+        Entry.objects.create( user=user2, username=user2.username,
+                             city="Charlottesville", exercise=exercise,
+                             date=date, calories=500, duration_hours=50 )
 
-        #  c = Client()
-        #  c.login( username = 'testuser', password = "!Password1" )
-        #  response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  #  args=["Running", "calories", "week"] ) )
-        #  entry_list = response.context['entry_list']
-        #  print( entry_list )
-        #  #  self.assertTrue( entry_list[0]['username'] == "testuser" )
-        #  #  self.assertTrue( entry_list[1]['username'] == "testuser2" )
+        c = Client()
 
+        # Sort by calories
+        c.login( username = 'testuser', password = "!Password1" )
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "calories", "week"] ) )
+        entry_list = response.context['entry_list']
+        self.assertTrue( entry_list[0]['username'] == "testuser" )
+        self.assertTrue( entry_list[1]['username'] == "testuser2" )
+
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "duration_hours", "week"] ) )
+        # Sort by hours
+        entry_list_hours = response.context['entry_list']
+        self.assertTrue( entry_list_hours[0]['username'] == "testuser2" )
+        self.assertTrue( entry_list_hours[1]['username'] == "testuser" )
+
+    # Test to see if scores are in the correct order and sorted properly
+    def test_correct_order_many(self):
+        User = get_user_model()
+        user1 = User.objects.get( username = 'testuser' )
+        user2 = User.objects.get( username = 'testuser2' )
+        user3 = User.objects.get( username = 'testuser3' )
+        user4 = User.objects.get( username = 'testuser4' )
+
+        exercise = Exercise.objects.get( name = "Running" )
+        date = pytz.utc.localize( datetime.now() )
+        Entry.objects.create( user=user1, username=user1.username,
+                             city="Tacoma", exercise=exercise, date=date, 
+                             calories=1000, duration_hours=35 )
+        Entry.objects.create( user=user2, username=user2.username,
+                             city="Charlottesville", exercise=exercise,
+                             date=date, calories=500, duration_hours=50 )
+        Entry.objects.create( user=user3, username=user3.username,
+                             city="Charlottesville", exercise=exercise,
+                             date=date, calories=1500, duration_hours=60 )
+        Entry.objects.create( user=user4, username=user4.username,
+                             city="Charlottesville", exercise=exercise,
+                             date=date, calories=200, duration_hours=20 )
+
+        c = Client()
+
+        # Sort by calories
+        c.login( username = 'testuser', password = "!Password1" )
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "calories", "week"] ) )
+        entry_list = response.context['entry_list']
+        self.assertTrue( entry_list[0]['username'] == "testuser3" )
+        self.assertTrue( entry_list[1]['username'] == "testuser" )
+        self.assertTrue( entry_list[2]['username'] == "testuser2" )
+        self.assertTrue( entry_list[3]['username'] == "testuser4" )
+
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "duration_hours", "week"] ) )
+        # Sort by hours
+        entry_list_hours = response.context['entry_list']
+        self.assertTrue( entry_list_hours[0]['username'] == "testuser3" )
+        self.assertTrue( entry_list_hours[1]['username'] == "testuser2" )
+        self.assertTrue( entry_list_hours[2]['username'] == "testuser" )
+        self.assertTrue( entry_list_hours[3]['username'] == "testuser4" )
 
 class WorkoutScheduleTest(TestCase):
     # Setup
@@ -293,9 +353,3 @@ class WorkoutScheduleTest(TestCase):
         workout_string2 = workout2.user.username + " Scheduled Exercise for " + workout2.date.strftime("%m/%d/%Y")
         self.assertEquals( workout_string1, "testuser Scheduled Exercise for 05/01/2021" )
         self.assertEquals( workout_string2, "testuser Scheduled Exercise for 05/02/2021" )
-
-
-
-
-
-
