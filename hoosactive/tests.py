@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from hoosactive.models import Entry, Exercise, Workout
 from hoosactive.models import Entry, Exercise
 from . import views
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from django.urls import reverse
 import pytz
@@ -204,6 +204,39 @@ class LeaderboardTest(TestCase):
             "Running", "calories", "week" ] ) )
         entry_list = response.context['entry_list']
         self.assertEquals( entry_list[0]['total_cals'], 1450 )
+
+
+    def test_sorting_date(self):
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+        exercise = Exercise.objects.get(name="Running")
+        date1 = pytz.utc.localize(datetime.now())
+        date2 = date1 - timedelta( days = 6 ) 
+        date3 = date1 - timedelta( days = 20 )
+        Entry.objects.create(user=user, exercise=exercise, date=date1, calories=1000, duration_hours=35)
+        Entry.objects.create(user=user, exercise=exercise, date=date2, calories=450, duration_hours=45)
+        Entry.objects.create(user=user, exercise=exercise, date=date3, calories=600, duration_hours=40)
+
+        c = Client()
+        c.login( username = 'testuser', password = '!Password1' )
+
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
+            "Running", "calories", "month" ] ) )
+        entry_list_month = response.context['entry_list']
+        self.assertEquals( entry_list_month[0]['total_cals'], 2050 )
+
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
+            "Running", "calories", "week" ] ) )
+        entry_list_week = response.context['entry_list']
+        self.assertEquals( entry_list_week[0]['total_cals'], 1450 )
+
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
+            "Running", "calories", "day" ] ) )
+        entry_list_week = response.context['entry_list']
+        self.assertEquals( entry_list_week[0]['total_cals'], 1000 )
+
+
+
 
     #  # Test to see if scores are in the correct order
     #  def test_correct_order(self):
