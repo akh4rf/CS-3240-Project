@@ -49,7 +49,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=2)
 
     # Toggles whether stats are shown or not
-    show_stats = models.BooleanField(default = True)
+    show_stats = models.BooleanField(default=True)
 
     objects = ProfileManager()
 
