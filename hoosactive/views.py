@@ -85,8 +85,7 @@ def login(request):
             else:
                 messages.info(request, 'Username OR password is incorrect')
 
-        context = {}
-        return render(request, 'hoosactive/login.html', context)
+        return render(request, 'hoosactive/login.html', {})
 
 def profile_noname(request):
     return HttpResponseRedirect('/profile/'+request.user.username)
@@ -173,7 +172,80 @@ def friends(request, username):
         else:
             x = x
     return render(request, "hoosactive/friends.html", {
+        'friends_list': profile_user.profile.friends.all(),
+        'request_list': authenticated_user.profile.friend_requests.all(),
+        'show_requests': (authenticated_user == profile_user),
     })
+
+def send_request(request, username, user2):
+    sender = request.user
+    # Make sure requesting user is logged in
+    if (sender.is_authenticated):
+        # Try to grab the requested user's profile
+        try:
+            recipient = User.objects.get(username=user2)
+            prof = recipient.profile
+        # If exception raised, redirect to requesting user's profile
+        except:
+            return HttpResponseRedirect('/profile/'+username)
+        # Else, send friend request if requested user is not already a friend
+        else:
+            if recipient not in sender.profile.friends.all():
+                if sender not in recipient.profile.friend_requests.all():
+                    prof.friend_requests.add(sender)
+                    return HttpResponseRedirect('/profile/'+recipient.username)
+                else:
+                    return HttpResponseRedirect('/profile/'+recipient.username)
+            else:
+                return HttpResponseRedirect('/profile/'+recipient.username)
+    # If requesting user not logged in, redirect to index
+    else:
+        return redirect('hoosactive:index')
+
+def request_response(request, username, user2, action):
+    responding_user = request.user
+
+    if (responding_user.is_authenticated):
+        # Try to grab the requesting user's profile
+        try:
+            requesting_user = User.objects.get(username=user2)
+            prof = requesting_user.profile
+        # If exception raised, redirect to responding user's profile
+        except:
+            return HttpResponseRedirect('/profile/'+username)
+        # Else, send friend request if requesting user is not already a friend
+        else:
+            if requesting_user in responding_user.profile.friend_requests.all():
+                if (action == "accept"):
+                    responding_user.profile.friends.add(requesting_user)
+                    requesting_user.profile.friends.add(responding_user)
+                    responding_user.profile.friend_requests.remove(requesting_user)
+                elif (action == "reject"):
+                    responding_user.profile.friend_requests.remove(requesting_user)
+            return HttpResponseRedirect('/profile/'+username+'/friends/')
+    # If responding user not logged in, redirect to index
+    else:
+        return redirect('hoosactive:index')
+
+def remove_friend(request, username, user2):
+    removing_user = request.user
+    if (removing_user.is_authenticated):
+        try:
+            removed_user = User.objects.get(username=user2)
+            prof = removed_user.profile
+        # If exception raised, redirect to requesting user's profile
+        except:
+            return HttpResponseRedirect('/profile/'+username)
+        # Else, attempt to remove friend
+        else:
+            # Only remove friend if they are already a friend
+            if removed_user in removing_user.profile.friends.all():
+                prof.friends.remove(removing_user)
+                removing_user.profile.friends.remove(removed_user)
+            return HttpResponseRedirect('/profile/'+removed_user.username)
+
+    else:
+        return redirect('hoosactive:index')
 
 def create(request, username):
     user = request.user

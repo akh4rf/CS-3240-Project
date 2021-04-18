@@ -27,11 +27,11 @@ class Profile(models.Model):
         primary_key = True,
     )
     # Many-To-Many Relationship with Exercise Model
-    exercises = models.ManyToManyField(Exercise, blank = True)
+    exercises = models.ManyToManyField(Exercise, blank=True)
     # Many-To-Many Relationship with other Users
-    friends = models.ManyToManyField(User, related_name='friends_set', blank = True)
+    friends = models.ManyToManyField(User, related_name='friends_set', blank=True)
     # List of Users who have requested friends
-    friend_requests = models.ManyToManyField(User, related_name='friend_requests_set', blank = True)
+    friend_requests = models.ManyToManyField(User, related_name='friend_requests_set', blank=True)
     # Age
     age = models.PositiveSmallIntegerField()
     # Height
