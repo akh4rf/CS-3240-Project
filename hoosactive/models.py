@@ -27,11 +27,11 @@ class Profile(models.Model):
         primary_key = True,
     )
     # Many-To-Many Relationship with Exercise Model
-    exercises = models.ManyToManyField(Exercise)
+    exercises = models.ManyToManyField(Exercise, blank = True)
     # Many-To-Many Relationship with other Users
-    friends = models.ManyToManyField(User, related_name='friends_set')
+    friends = models.ManyToManyField(User, related_name='friends_set', blank = True)
     # List of Users who have requested friends
-    friend_requests = models.ManyToManyField(User, related_name='friend_requests_set')
+    friend_requests = models.ManyToManyField(User, related_name='friend_requests_set', blank = True)
     # Age
     age = models.PositiveSmallIntegerField()
     # Height
@@ -40,7 +40,7 @@ class Profile(models.Model):
     # Weight
     weight_lbs = models.DecimalField(decimal_places=1,max_digits=4)
     # Profile Picture
-    #profile_picture = models.ImageField()
+    profile_pic = models.ImageField(default="default.jpg")
     # Bio
     bio_text = models.TextField(max_length=150)
     # City

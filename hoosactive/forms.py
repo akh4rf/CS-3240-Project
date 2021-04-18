@@ -14,3 +14,7 @@ class PostForm(forms.ModelForm):
 		model = Profile
 		fields = ['age', 'height_feet', 'height_inches', 'weight_lbs', 'bio_text', 'city', 'state', 'show_stats']
 
+class ChangePictureForm(forms.ModelForm):
+	class Meta:
+		model = Profile
+		fields = ['profile_pic']
