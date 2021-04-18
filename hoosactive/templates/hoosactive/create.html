@@ -56,6 +56,9 @@
 							</div>
 							{{form.state}}
 						</div>
+						<div class="d-flex justify-content-center mt-3 login_container">
+							<input type="button" value="Find my location" id="MyButton" >
+						</div>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
 								<p style="color: white;">Do you want your stats to be public?</p>
@@ -98,6 +101,16 @@
 	for (var field in form_fields) {
       form_fields[field].className += ' form-control'
     }
+</script>
+<script>
+  $(document).ready(function(){
+    $('#MyButton').click(function(){
+       let apiKey = '2abf7b99c69f419396d826414e9ef3f5';
+	   $.getJSON('https://api.bigdatacloud.net/data/ip-geolocation-with-confidence?key=' + apiKey, function(data) {
+  	   console.log("JSON.stringify(data, null, 2)");
+		});
+    });
+  });
 </script>
 </body>
 
