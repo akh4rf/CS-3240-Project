@@ -68,7 +68,6 @@
       <a href="/profile/{{ profile_user.username }}/friends/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
       {% if user == profile_user %}
       <a href="/profile/{{ user.username }}/update/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
-      <a href="/profile/{{ user.username }}/update/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Settings</button></a>
       {% else %}
       {% if is_friend %}
       <a href="/profile/{{ user.username }}/remove-friend/{{ profile_user.username }}/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Remove Friend</button></a>
