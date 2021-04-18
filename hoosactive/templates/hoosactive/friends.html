@@ -5,23 +5,28 @@
 <div class="row no-gutters">
     <div class="col">
         <form class="m-4" action="{% url 'hoosactive:search' %}" method="GET">
-            <button class="p-1 pb-3 btn btn-outline-none" type="submit"><i class="bi bi-search"></i></button> 
+            <button class="p-1 pb-3 btn btn-outline-none" type="submit"><i class="bi bi-search"></i></button>
             <input class="col-8" style="font-size: 18px;" type="text" placeholder="Search Username..." name="search_profile">
         </form>
     </div>
-
+    {% if show_requests is True %}
     <div class="col">
         <button style="font-size: 18px; float: right;" class="m-3 btn btn-outline-none font-weight-bold" data-toggle="modal" data-target="#FriendRequestsModal">Friend Requests</button>
     </div>
+    {% endif %}
 </div>
 
 
 <!-- Example Friends Buttons -->
-<button class="btn-light mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
-    <img style="border-radius: 50%; width:75px; height:75px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
-    <p style="font-size: 20px" class="col mx-auto my-auto">iangsohan</p>
-    <p style="font-size: 20px" class="col mx-auto my-auto">Woodstock, CT</p>
-</button>
+{% for friend in friends_list %}
+<a href="/profile/{{ friend.username }}/" style="text-decoration: none !important;">
+  <button class="btn-light mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
+      <img style="border-radius: 50%; width:75px; height:75px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
+      <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.username }}</p>
+      <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.profile.city }}, {{ friend.profile.state }}</p>
+  </button>
+</a>
+{% endfor %}
 
 
 <!-- Friend Request Modal -->
@@ -34,14 +39,16 @@
         </div>
         <div>
             <!-- Example Friend Request -->
+            {% for usr in request_list %}
             <div class="mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
                 <img style="border-radius: 50%; width:50px; height:50px;" class="mr-4" src="{% static 'hoosactive/images/empty-profile.png' %}">
-                <p style="font-size: 14px" class="col mx-auto my-auto">iangsohan</p>
-                <p style="font-size: 28px" class="col mx-auto my-auto">
-                    <i style="color: green" class="bi bi-check-circle-fill"></i>
-                    <i style="color: red" class="bi bi-x-circle-fill"></i>
-                </p>
+                <p style="font-size: 14px" class="col mx-auto my-auto">{{ usr.username }}</p>
+                <div style="font-size: 28px" class="col mx-auto my-auto">
+                    <a href="/profile/{{ user.username }}/request-respond/{{ usr.username }}/accept/" style="color: green" class="bi bi-check-circle-fill"></a>
+                    <a href="/profile/{{ user.username }}/request-respond/{{ usr.username }}/reject/" style="color: red" class="bi bi-x-circle-fill"></a>
+                </div>
             </div>
+            {% endfor %}
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
