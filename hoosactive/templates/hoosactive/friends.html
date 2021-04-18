@@ -21,7 +21,9 @@
 {% for friend in friends_list %}
 <a href="/profile/{{ friend.username }}/" style="text-decoration: none !important;">
   <button class="btn-light mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
-      <img style="border-radius: 50%; width:75px; height:75px;" src="{% static 'hoosactive/images/empty-profile.png' %}">
+      <div style="border-radius: 50%; width: 75px; height: 75px; overflow: hidden;">
+        <img src="{{friend.profile.profile_pic.url}}" width=75>
+      </div>
       <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.username }}</p>
       <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.profile.city }}, {{ friend.profile.state }}</p>
   </button>
@@ -41,7 +43,9 @@
             <!-- Example Friend Request -->
             {% for usr in request_list %}
             <div class="mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
-                <img style="border-radius: 50%; width:50px; height:50px;" class="mr-4" src="{% static 'hoosactive/images/empty-profile.png' %}">
+                <div style="border-radius: 50%; width: 50px; height: 50px; overflow: hidden; text-align: center;">
+                  <img src="{{usr.profile.profile_pic.url}}" width=50>
+                </div>
                 <p style="font-size: 14px" class="col mx-auto my-auto">{{ usr.username }}</p>
                 <div style="font-size: 28px" class="col mx-auto my-auto">
                     <a href="/profile/{{ user.username }}/request-respond/{{ usr.username }}/accept/" style="color: green" class="bi bi-check-circle-fill"></a>

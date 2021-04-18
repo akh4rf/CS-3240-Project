@@ -81,6 +81,7 @@
 	var form_fields = document.getElementsByTagName('input')
 	var prof = '{{user.profile}}'
 	if (prof) {
+		// form_fields[1] = '{{user.profile.bio_text}}';
 		form_fields[2].defaultValue='{{user.profile.age}}';
 		form_fields[3].defaultValue='{{user.profile.height_feet}}';
 		form_fields[4].defaultValue='{{user.profile.height_inches}}';

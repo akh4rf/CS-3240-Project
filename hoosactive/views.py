@@ -35,10 +35,16 @@ def index(request):
 def log_exercise(request, redir):
     user = request.user
     if (user.is_authenticated):
-        if request.method == 'POST':
-            exer = Exercise.objects.get(name=request.POST['drop'])
-            entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
-            return redirect('hoosactive:'+redir)
+        try:
+            user.profile
+        except:
+            return HttpResponseRedirect('/profile/'+user.username+'/create/')
+        else:
+            if request.method == 'POST':
+                exer = Exercise.objects.get(name=request.POST['drop'])
+                user.profile.add_exercise(exer.name)
+                entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
+                return redirect('hoosactive:'+redir)
     else:
         return redirect('hoosactive:login')
 
