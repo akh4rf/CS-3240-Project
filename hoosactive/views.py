@@ -17,16 +17,20 @@ from .decorators import created_profile
 from django.core import serializers
 
 def index(request):
-    if (request.user.is_authenticated):
-        workout_list = request.user.workout_set.filter(
+    user = request.user
+    if (user.is_authenticated):
+        workout_list = user.workout_set.filter(
             date__gt=timezone.now()
         ).order_by('date')[:5]
         count = workout_list.count()
+        recent_entries = user.profile.get_recent_entries()
     else:
         workout_list = []
+        recent_entries = []
         count = 0
     return render(request, 'hoosactive/index.html', {
         'exercise_list': Exercise.objects.order_by('name'),
+        'recent_entries': recent_entries,
         'workout_list': workout_list,
         'workout_blank': range(0,5-count),
         'redirect': 'index'
@@ -124,6 +128,10 @@ def profile(request, username):
             if profile_user in authenticated_user.profile.friends.all():
                 is_friend = True
 
+            is_requested = False
+            if authenticated_user in profile_user.profile.friend_requests.all():
+                is_requested = True
+
             stat_dict = {}
             max_cals = 0
 
@@ -157,8 +165,11 @@ def profile(request, username):
               'stat_dict': stat_dict,
               'max_cals': max_cals,
               'exercise_list': Exercise.objects.order_by('name'),
+              'recent_entries': authenticated_user.profile.get_recent_entries(),
               'picture_form': picture_form,
-              'redirect': 'profile_noname'
+              'redirect': 'profile_noname',
+              'is_requested': is_requested,
+              'show_stats': profile_user.profile.show_stats
             })
     else:
         return redirect('hoosactive:login')
@@ -267,6 +278,7 @@ def create(request, username):
                 else:
                     Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
                     weight_lbs=request.POST['weight_lbs'],bio_text=request.POST['bio_text'],city=request.POST['city'],state=request.POST['state'],show_stats=bool(request.POST['show_stats']))
+                    Profile.objects.get(user=user).update_city()
                 return HttpResponseRedirect('/profile/'+request.user.username)
 
         context = {'form': form}
@@ -282,7 +294,7 @@ def leaderboard(request):
     })
 
 
-def exercise_leaderboard(request, exercise_name, sort, timeframe):
+def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
     exercise = get_object_or_404(Exercise, name=exercise_name)
 
     timedict = {"day": 1,"week": 7,"month": 28}
@@ -296,9 +308,17 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe):
         'calories': 'total_cals'
     }
 
-    entry_list = Entry.objects.filter(
-        exercise=exercise.id
-    ).filter(
+    friends_list = []
+    friends_list.append(request.user)
+    for friend in request.user.profile.friends.all():
+        friends_list.append(friend)
+
+    entry_list = Entry.objects.filter(exercise=exercise.id)
+
+    if (population=="friends"):
+        entry_list = entry_list.filter(user__in=friends_list)
+
+    entry_list = entry_list.filter(
         date__gte=timezone.now()-datetime.timedelta(days=timedict[timeframe])
     ).values(
         'username',
@@ -315,6 +335,7 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe):
         'exercise': exercise,
         'entry_list': entry_list,
         'timeframe': timeframe,
+        'population': population
     })
 
 

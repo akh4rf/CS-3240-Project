@@ -64,6 +64,12 @@ class Profile(models.Model):
         if not self.does_exercise(exercise_name):
             exercise = Exercise.objects.get(name=exercise_name)
             self.exercises.add(exercise)
+    def get_recent_entries(self):
+        return (self.user.entry_set.all().order_by('date')[:5])
+    def update_city(self):
+        for entry in self.user.entry_set.all():
+            entry.city = self.city
+            entry.save()
 
 
 class EntryManager(models.Manager):

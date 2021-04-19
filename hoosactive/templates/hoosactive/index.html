@@ -64,10 +64,14 @@
       <div class="modal-body">
         <form action="{% url 'hoosactive:log_exercise' redirect %}" method="post">
           {% csrf_token %}
-          <select name="drop" class="form-control">
+          <select id="drop" name="drop" class="form-control" onchange="fillEntry()">
             <option value="" selected disabled>Select Exercise Type</option>
             {% for exercise in exercise_list %}
             <option value="{{ exercise.name }}">{{ exercise.name }}</option>
+            {% endfor %}
+            <option value="" disabled>Recent Entries</option>
+            {% for entry in recent_entries %}
+            <option value="{{ entry.exercise.name }}" data-duration="{{ entry.duration_hours }}" data-calories="{{ entry.calories }}">{{ entry.exercise }} on {{ entry.date }}</option>
             {% endfor %}
           </select>
           <label for="date">Timestamp</label>

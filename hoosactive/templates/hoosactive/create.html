@@ -4,13 +4,13 @@
 
 
 <body style="background-color: #EEEEEE;">
-	<div class="container h-100 mt-3"style="background-color: #EEEEEE;">
+	<div class="container h-100 mt-3 mb-3"style="background-color: #EEEEEE;">
 		<div class="d-flex justify-content-center h-100">
 			<div class="user_card">
 				<div class="d-flex justify-content-center">
 					<h2 class="mt-1" style="color: #FFF; text-align: center; margin-bottom: 0 !important; font-size: 20px;">{% if user.profile %}EDIT PROFILE{% else %}CREATE PROFILE{% endif%}</h2>
 				</div>
-				<div class="d-flex justify-content-center" style="margin-top: 20px;">
+				<div class="d-flex justify-content-center mb-3" style="margin-top: 20px;">
 
 					<form method="POST" action="">
 						{% csrf_token %}
@@ -67,12 +67,6 @@
 				   		</div>
 					</form>
 				</div>
-
-
-
-				<div class="mt-3">
-
-				</div>
 			</div>
 		</div>
 	</div>
@@ -95,7 +89,7 @@
 	form_fields[5].placeholder='Weight (lbs)...';
 	form_fields[6].placeholder='City...';
 	form_fields[7].placeholder='State...';
-	
+
 	for (var field in form_fields) {
       form_fields[field].className += ' form-control'
     }

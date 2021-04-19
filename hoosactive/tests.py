@@ -148,7 +148,7 @@ class DeletedTest(TestCase):
         user = User.objects.create(username='testuser')
         user.set_password('!Password1')
         user.save()
-    
+
     # Test Correct Input
     def test_deleted_user(self):
         c = Client()
@@ -189,7 +189,7 @@ class LeaderboardTest(TestCase):
         c = Client()
         c.login( username = 'testuser', password = '!Password1' )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "week" ] ) )
+            "Running", "calories", "week", "all" ] ) )
         self.assertEquals( response.status_code, 200 )
 
 
@@ -205,7 +205,7 @@ class LeaderboardTest(TestCase):
         c = Client()
         c.login( username = 'testuser', password = '!Password1' )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "week" ] ) )
+            "Running", "calories", "week", "all" ] ) )
         entry_list = response.context['entry_list']
         self.assertEquals( entry_list[0]['total_cals'], 1450 )
 
@@ -216,7 +216,7 @@ class LeaderboardTest(TestCase):
         user = User.objects.get(username='testuser')
         exercise = Exercise.objects.get(name="Running")
         date1 = pytz.utc.localize(datetime.now())
-        date2 = date1 - timedelta( days = 6 ) 
+        date2 = date1 - timedelta( days = 6 )
         date3 = date1 - timedelta( days = 20 )
         Entry.objects.create(user=user, exercise=exercise, date=date1, calories=1000, duration_hours=35)
         Entry.objects.create(user=user, exercise=exercise, date=date2, calories=450, duration_hours=45)
@@ -226,17 +226,17 @@ class LeaderboardTest(TestCase):
         c.login( username = 'testuser', password = '!Password1' )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "month" ] ) )
+            "Running", "calories", "month", "all" ] ) )
         entry_list_month = response.context['entry_list']
         self.assertEquals( entry_list_month[0]['total_cals'], 2050 )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "week" ] ) )
+            "Running", "calories", "week", "all" ] ) )
         entry_list_week = response.context['entry_list']
         self.assertEquals( entry_list_week[0]['total_cals'], 1450 )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "day" ] ) )
+            "Running", "calories", "day", "all" ] ) )
         entry_list_week = response.context['entry_list']
         self.assertEquals( entry_list_week[0]['total_cals'], 1000 )
 
@@ -250,7 +250,7 @@ class LeaderboardTest(TestCase):
         exercise = Exercise.objects.get( name = "Running" )
         date = pytz.utc.localize( datetime.now() )
         Entry.objects.create( user=user1, username=user1.username,
-                             city="Tacoma", exercise=exercise, date=date, 
+                             city="Tacoma", exercise=exercise, date=date,
                              calories=1000, duration_hours=35 )
         Entry.objects.create( user=user2, username=user2.username,
                              city="Charlottesville", exercise=exercise,
@@ -261,13 +261,13 @@ class LeaderboardTest(TestCase):
         # Sort by calories
         c.login( username = 'testuser', password = "!Password1" )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "calories", "week"] ) )
+                                  args=["Running", "calories", "week", "all"] ) )
         entry_list = response.context['entry_list']
         self.assertTrue( entry_list[0]['username'] == "testuser" )
         self.assertTrue( entry_list[1]['username'] == "testuser2" )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "duration_hours", "week"] ) )
+                                  args=["Running", "duration_hours", "week", "all"] ) )
         # Sort by hours
         entry_list_hours = response.context['entry_list']
         self.assertTrue( entry_list_hours[0]['username'] == "testuser2" )
@@ -284,7 +284,7 @@ class LeaderboardTest(TestCase):
         exercise = Exercise.objects.get( name = "Running" )
         date = pytz.utc.localize( datetime.now() )
         Entry.objects.create( user=user1, username=user1.username,
-                             city="Tacoma", exercise=exercise, date=date, 
+                             city="Tacoma", exercise=exercise, date=date,
                              calories=1000, duration_hours=35 )
         Entry.objects.create( user=user2, username=user2.username,
                              city="Charlottesville", exercise=exercise,
@@ -301,7 +301,7 @@ class LeaderboardTest(TestCase):
         # Sort by calories
         c.login( username = 'testuser', password = "!Password1" )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "calories", "week"] ) )
+                                  args=["Running", "calories", "week", "all"] ) )
         entry_list = response.context['entry_list']
         self.assertTrue( entry_list[0]['username'] == "testuser3" )
         self.assertTrue( entry_list[1]['username'] == "testuser" )
@@ -309,7 +309,7 @@ class LeaderboardTest(TestCase):
         self.assertTrue( entry_list[3]['username'] == "testuser4" )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "duration_hours", "week"] ) )
+                                  args=["Running", "duration_hours", "week", "all"] ) )
         # Sort by hours
         entry_list_hours = response.context['entry_list']
         self.assertTrue( entry_list_hours[0]['username'] == "testuser3" )

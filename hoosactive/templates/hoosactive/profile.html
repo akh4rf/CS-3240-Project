@@ -12,14 +12,14 @@
         <div style="width: 100%;">
           <div style="width: 500px; margin: auto;">
             <text>Calories Burned Per Day</text>
-              <div class="profile-chart-row" style="height: 224px; align-items: flex-end;">
-                {% for day, cals in stat_dict.items %}
-                <div style="width: calc(100%/7); height: calc(200px*{{ cals.0 }}/{{ max_cals }} + 24px); padding: 0 0.3%;">
-                  <text>{{ cals.0 }}</text>
-                  <div class="profile-chart-bar" style="background: #007BFFC5; width: 100%; height: calc(200px*{{ cals.0 }}/{{ max_cals }});"></div>
-                </div>
-                {% endfor %}
+            <div class="profile-chart-row" style="height: 224px; align-items: flex-end;">
+              {% for day, cals in stat_dict.items %}
+              <div style="width: calc(100%/7); height: calc(200px*{{ cals.0 }}/{{ max_cals }} + 24px); padding: 0 0.3%;">
+                <text>{{ cals.0 }}</text>
+                <div class="profile-chart-bar" style="background: #007BFFC5; width: 100%; height: calc(200px*{{ cals.0 }}/{{ max_cals }});"></div>
               </div>
+              {% endfor %}
+            </div>
             <hr style="margin: 0; height: 1px; background: black;">
             <div class="profile-chart-row" style="align-items: flex-start;">
               {% for day, cals in stat_dict.items %}
@@ -46,37 +46,43 @@
 
       </div>
 
-    <div class="col mt-5">
-      <div class="mx-auto" style="border-radius: 50%; width: 200px; height: 200px; overflow: hidden;">
-        <img src="{{profile_user.profile.profile_pic.url}}" width=200>
+      <div class="col mt-5">
+        <div class="mx-auto" style="border-radius: 50%; width: 200px; height: 200px; overflow: hidden;">
+          <img src="{{profile_user.profile.profile_pic.url}}" width=200>
+        </div>
+
+        {% if profile_user.first_name %}
+        <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+        {% else %}
+        <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.username }}</p>
+        {% endif %}
+
+        <p class="px-5" style="font-size:20px;color:gray;">{{ profile_user.profile.bio_text }}</p>
+        {% if show_stats %}
+        <p style="font-size:20px;color:gray;">{{ profile_user.profile.age }}  -  {{ profile_user.profile.height_feet }}'{{ profile_user.profile.height_inches }}"  -  {{ profile_user.profile.weight_lbs }} lbs</p>
+        {% endif %}
+        <p style="font-size:20px;color:gray;">{{ profile_user.profile.city }}, {{ profile_user.profile.state }}</p>
+
+        <a href="/profile/{{ profile_user.username }}/friends/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
+        {% if user == profile_user %}
+
+        <!-- <a href="/profile/{{ user.username }}/update/"> -->
+        <button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#SettingsModal">Settings</button>
+        <!-- </a> -->
+
+        {% else %}
+        {% if is_friend %}
+        <a href="/profile/{{ user.username }}/remove-friend/{{ profile_user.username }}/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Remove Friend</button></a>
+        {% else %}
+        {% if is_requested %}
+        <button class="col-5 mt-2 mx-5 p-3 btn btn-outline-secondary font-weight-bold" disabled>Request Sent</button>
+        {% else %}
+        <a href="/profile/{{ user.username }}/send-request/{{ profile_user.username }}/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Send Friend Request</button></a>
+        {% endif %}
+        {% endif %}
+        {% endif %}
       </div>
-
-      {% if profile_user.first_name %}
-      <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
-      {% else %}
-      <p class="font-weight-bold" style="font-size:30px;color:rgb(72,72,72);">{{ profile_user.username }}</p>
-      {% endif %}
-
-      <p class="px-5" style="font-size:20px;color:gray;">{{ profile_user.profile.bio_text }}</p>
-      <p style="font-size:20px;color:gray;">{{ profile_user.profile.age }}  -  {{ profile_user.profile.height_feet }}' {{ profile_user.profile.height_inches }}"  -  {{ profile_user.profile.weight_lbs }} lbs</p>
-      <p style="font-size:20px;color:gray;">{{ profile_user.profile.city }}, {{ profile_user.profile.state }}</p>
-
-      <a href="/profile/{{ profile_user.username }}/friends/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Friends</button></a>
-      {% if user == profile_user %}
-
-      <!-- <a href="/profile/{{ user.username }}/update/"> -->
-      <button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#SettingsModal">Settings</button>
-      <!-- </a> -->
-
-      {% else %}
-      {% if is_friend %}
-      <a href="/profile/{{ user.username }}/remove-friend/{{ profile_user.username }}/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Remove Friend</button></a>
-      {% else %}
-      <a href="/profile/{{ user.username }}/send-request/{{ profile_user.username }}/"><button class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold">Send Friend Request</button></a>
-      {% endif %}
-      {% endif %}
     </div>
-  </div>
 
     {% endif %}
   </div>
@@ -92,10 +98,14 @@
         <div class="modal-body">
           <form action="{% url 'hoosactive:log_exercise' redirect %}" method="post">
             {% csrf_token %}
-            <select name="drop" class="form-control">
+            <select id="drop" name="drop" class="form-control" onchange="fillEntry()">
               <option value="" selected disabled>Select Exercise Type</option>
               {% for exercise in exercise_list %}
               <option value="{{ exercise.name }}">{{ exercise.name }}</option>
+              {% endfor %}
+              <option value="" disabled>Recent Entries</option>
+              {% for entry in recent_entries %}
+              <option value="{{ entry.exercise.name }}" data-duration="{{ entry.duration_hours }}" data-calories="{{ entry.calories }}">{{ entry.exercise }} on {{ entry.date }}</option>
               {% endfor %}
             </select>
             <label for="date">Timestamp</label>
@@ -149,15 +159,12 @@
           <h5 class="modal-title">Settings</h5>
         </div>
         <div class="modal-body">
-
           <a href="/profile/{{ user.username }}/update/">
             <button style="width: 100%; font-size: 18px;" class="mb-3 p-3 btn btn-outline-primary font-weight-bold">Edit Profile Information</button>
           </a>
-
           <br></br>
-
           <h1 class="font-weight-bold" style="text-align: center; font-size: 18px;">Change Profile Photo</h1>
-          <div class="mb-3">
+          <div style="text-align: center;" class="mb-3">
             <form method="POST" action="" enctype="multipart/form-data">
               {% csrf_token %}
               {{picture_form.profile_pic}}
@@ -168,7 +175,6 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
-          </form>
         </div>
       </div>
     </div>
