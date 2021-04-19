@@ -18,16 +18,18 @@ from django.core import serializers
 
 def index(request):
     user = request.user
-    if (user.is_authenticated):
+    try:
+        user.profile
+    except:
+        workout_list = []
+        count = 0
+        recent_entries = []
+    else:
         workout_list = user.workout_set.filter(
             date__gt=timezone.now()
         ).order_by('date')[:5]
         count = workout_list.count()
         recent_entries = user.profile.get_recent_entries()
-    else:
-        workout_list = []
-        recent_entries = []
-        count = 0
     return render(request, 'hoosactive/index.html', {
         'exercise_list': Exercise.objects.order_by('name'),
         'recent_entries': recent_entries,
