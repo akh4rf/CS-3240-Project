@@ -21,15 +21,13 @@ def index(request):
     try:
         user.profile
     except:
+        recent_entries = []
         workout_list = []
         count = 0
-        recent_entries = []
     else:
-        workout_list = user.workout_set.filter(
-            date__gt=timezone.now()
-        ).order_by('date')[:5]
-        count = workout_list.count()
         recent_entries = user.profile.get_recent_entries()
+        workout_list = user.profile.get_recent_workouts()
+        count = workout_list.count()
     return render(request, 'hoosactive/index.html', {
         'exercise_list': Exercise.objects.order_by('name'),
         'recent_entries': recent_entries,
@@ -120,19 +118,10 @@ def profile(request, username):
                 picture_form = ChangePictureForm(request.POST, request.FILES, instance=profile_user.profile)
                 if picture_form.is_valid():
                     picture_form.save()
-            workout_list = profile_user.workout_set.filter(
-                date__gt=timezone.now()
-            ).order_by(
-                'date'
-            )[:5]
+            workout_list = profile_user.profile.get_recent_workouts()
 
-            is_friend = False
-            if profile_user in authenticated_user.profile.friends.all():
-                is_friend = True
-
-            is_requested = False
-            if authenticated_user in profile_user.profile.friend_requests.all():
-                is_requested = True
+            is_friend = (profile_user in authenticated_user.profile.friends.all())
+            is_requested = (authenticated_user in profile_user.profile.friend_requests.all())
 
             stat_dict = {}
             max_cals = 0
@@ -182,19 +171,20 @@ def friends(request, username):
 
     if authenticated_user.is_authenticated:
         try:
-            x = profile_user.profile
+            profile_user.profile
         except:
             if (authenticated_user == profile_user):
                 return HttpResponseRedirect('/profile/'+request.user.username+'/create/')
             else:
                 return redirect('hoosactive:index')
         else:
-            x = x
-    return render(request, "hoosactive/friends.html", {
-        'friends_list': profile_user.profile.friends.all(),
-        'request_list': authenticated_user.profile.friend_requests.all(),
-        'show_requests': (authenticated_user == profile_user),
-    })
+            return render(request, "hoosactive/friends.html", {
+                'friends_list': profile_user.profile.friends.all(),
+                'request_list': authenticated_user.profile.friend_requests.all(),
+                'show_requests': (authenticated_user == profile_user),
+            })
+    else:
+        return redirect('hoosactive:login')
 
 def send_request(request, username, user2):
     sender = request.user
@@ -217,9 +207,9 @@ def send_request(request, username, user2):
                     return HttpResponseRedirect('/profile/'+recipient.username)
             else:
                 return HttpResponseRedirect('/profile/'+recipient.username)
-    # If requesting user not logged in, redirect to index
+    # If requesting user not logged in, redirect to login
     else:
-        return redirect('hoosactive:index')
+        return redirect('hoosactive:login')
 
 def request_response(request, username, user2, action):
     responding_user = request.user
@@ -244,7 +234,7 @@ def request_response(request, username, user2, action):
             return HttpResponseRedirect('/profile/'+username+'/friends/')
     # If responding user not logged in, redirect to index
     else:
-        return redirect('hoosactive:index')
+        return redirect('hoosactive:login')
 
 def remove_friend(request, username, user2):
     removing_user = request.user
@@ -264,7 +254,7 @@ def remove_friend(request, username, user2):
             return HttpResponseRedirect('/profile/'+removed_user.username)
 
     else:
-        return redirect('hoosactive:index')
+        return redirect('hoosactive:login')
 
 def create(request, username):
     user = request.user
@@ -275,18 +265,19 @@ def create(request, username):
         if request.method == 'POST':
             form = PostForm(request.POST)
             if form.is_valid():
+                show_stats = 'show_stats' in request.POST
                 if (Profile.objects.filter(user=user).count() == 0):
-                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],request.POST['bio_text'],request.POST['city'],request.POST['state'],bool(request.POST['show_stats']))
+                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],request.POST['bio_text'],request.POST['city'],request.POST['state'],show_stats)
                 else:
                     Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
-                    weight_lbs=request.POST['weight_lbs'],bio_text=request.POST['bio_text'],city=request.POST['city'],state=request.POST['state'],show_stats=bool(request.POST['show_stats']))
+                    weight_lbs=request.POST['weight_lbs'],bio_text=request.POST['bio_text'],city=request.POST['city'],state=request.POST['state'],show_stats=show_stats)
                     Profile.objects.get(user=user).update_city()
                 return HttpResponseRedirect('/profile/'+request.user.username)
 
         context = {'form': form}
         return render(request, 'hoosactive/create.html', context)
     else:
-        return redirect('hoosactive:index')
+        return redirect('hoosactive:login')
 
 
 def leaderboard(request):
@@ -310,8 +301,7 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
         'calories': 'total_cals'
     }
 
-    friends_list = []
-    friends_list.append(request.user)
+    friends_list = [request.user]
     try:
         request.user.profile
     except:
