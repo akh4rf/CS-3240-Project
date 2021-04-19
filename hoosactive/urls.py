@@ -15,12 +15,12 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile, name='profile'),
     path('profile/<str:username>/create/', views.create, name='create'),
     path('profile/<str:username>/update/', views.create, name='update'),
+    path('profile/<str:username>/friends/', views.friends, name='friends'),
     path('profile/<str:username>/send-request/<str:user2>/', views.send_request, name='send_request'),
     path('profile/<str:username>/remove-friend/<str:user2>/', views.remove_friend, name='remove_friend'),
     path('profile/<str:username>/request-respond/<str:user2>/<str:action>/', views.request_response, name='request_response'),
     path('register/', views.register, name="register"),
     path('leaderboard/', views.leaderboard, name="leaderboard"),
-    path('leaderboard/<str:exercise_name>/<str:sort>/<str:timeframe>/', views.exercise_leaderboard, name="exercise_leaderboard"),
-    path('profile/<str:username>/friends/', views.friends, name='friends'),
+    path('leaderboard/<str:exercise_name>/<str:sort>/<str:timeframe>/<str:population>/', views.exercise_leaderboard, name="exercise_leaderboard"),
     path('search/', views.search, name='search')
 ]
