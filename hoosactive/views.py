@@ -266,11 +266,12 @@ def create(request, username):
             form = PostForm(request.POST)
             if form.is_valid():
                 show_stats = 'show_stats' in request.POST
+                bio_text = request.POST['bio_text'].replace("\'", "’").replace("\"", '“')
                 if (Profile.objects.filter(user=user).count() == 0):
-                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],request.POST['bio_text'],request.POST['city'],request.POST['state'],show_stats)
+                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],bio_text,request.POST['city'],request.POST['state'],show_stats)
                 else:
                     Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
-                    weight_lbs=request.POST['weight_lbs'],bio_text=request.POST['bio_text'],city=request.POST['city'],state=request.POST['state'],show_stats=show_stats)
+                    weight_lbs=request.POST['weight_lbs'],bio_text=bio_text,city=request.POST['city'],state=request.POST['state'],show_stats=show_stats)
                     Profile.objects.get(user=user).update_city()
                 return HttpResponseRedirect('/profile/'+request.user.username)
 
