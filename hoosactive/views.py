@@ -310,8 +310,13 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
 
     friends_list = []
     friends_list.append(request.user)
-    for friend in request.user.profile.friends.all():
-        friends_list.append(friend)
+    try:
+        request.user.profile
+    except:
+        pass
+    else:
+        for friend in request.user.profile.friends.all():
+            friends_list.append(friend)
 
     entry_list = Entry.objects.filter(exercise=exercise.id)
 
