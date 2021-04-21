@@ -180,6 +180,7 @@ def friends(request, username):
         else:
             return render(request, "hoosactive/friends.html", {
                 'friends_list': profile_user.profile.friends.all(),
+                'request_count': profile_user.profile.friend_requests.count(),
                 'request_list': authenticated_user.profile.friend_requests.all(),
                 'show_requests': (authenticated_user == profile_user),
             })
