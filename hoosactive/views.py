@@ -1,20 +1,23 @@
+from django.core import serializers
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse, resolve
-from django.contrib.auth.forms import UserCreationForm
-from .models import *
-from .forms import CreateUserForm, PostForm, ChangePictureForm
+from django.utils import timezone
+from django.views import generic
+
+from django.contrib import messages
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login as auth_login
-from django.contrib import messages
-from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
-from django.views import generic
-from django.utils import timezone
-import datetime
-from django.db.models import Sum
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
+
 from .decorators import created_profile
-from django.core import serializers
+from .forms import CreateUserForm, PostForm, ChangePictureForm
+from .models import *
+
+import datetime
 
 def index(request):
     user = request.user
@@ -26,14 +29,14 @@ def index(request):
         count = 0
     else:
         recent_entries = user.profile.get_recent_entries()
-        workout_list = user.profile.get_recent_workouts()
+        workout_list = user.profile.get_upcoming_workouts()
         count = workout_list.count()
     return render(request, 'hoosactive/index.html', {
         'exercise_list': Exercise.objects.order_by('name'),
         'recent_entries': recent_entries,
-        'workout_list': workout_list,
+        'redirect': 'index',
         'workout_blank': range(0,5-count),
-        'redirect': 'index'
+        'workout_list': workout_list
     })
 
 def log_exercise(request, redir):
@@ -69,14 +72,12 @@ def register(request):
         if request.method == 'POST':
             form = CreateUserForm(request.POST)
             if form.is_valid():
-                user =form.save()
+                user = form.save()
                 username = form.cleaned_data.get('username')
                 messages.success(request, 'Account was created for ' + username)
-
                 return redirect('hoosactive:login')
 
-        context = {'form': form}
-        return render(request, 'hoosactive/register.html', context)
+        return render(request, 'hoosactive/register.html', {'form': form})
 
 
 def login(request):
@@ -118,13 +119,10 @@ def profile(request, username):
                 picture_form = ChangePictureForm(request.POST, request.FILES, instance=profile_user.profile)
                 if picture_form.is_valid():
                     picture_form.save()
-            workout_list = profile_user.profile.get_recent_workouts()
-
-            is_friend = (profile_user in authenticated_user.profile.friends.all())
-            is_requested = (authenticated_user in profile_user.profile.friend_requests.all())
 
             stat_dict = {}
             max_cals = 0
+            cals_burned = 0
 
             for i in range(0,7):
                 date = timezone.now()-datetime.timedelta(days=6-i)
@@ -142,25 +140,27 @@ def profile(request, username):
                 )
 
                 if (aggregate.count() != 0):
-                    cals_burned = aggregate[0]['total_cals']
-                    stat_dict[day_of_week] = (int(cals_burned), dm_format)
-                    max_cals = max(int(cals_burned), max_cals)
+                    cals_burned = int(aggregate[0]['total_cals'])
+                    stat_dict[day_of_week] = (cals_burned, dm_format)
+                    max_cals = max(cals_burned, max_cals)
                 else:
                     stat_dict[day_of_week] = (0, dm_format)
 
+            workout_list = profile_user.profile.get_upcoming_workouts()
+
             return render(request, 'hoosactive/profile.html', {
-              'workout_list': workout_list,
-              'workout_blank': range(0,5-workout_list.count()),
-              'profile_user': profile_user,
-              'is_friend': is_friend,
-              'stat_dict': stat_dict,
-              'max_cals': max_cals,
-              'exercise_list': Exercise.objects.order_by('name'),
-              'recent_entries': authenticated_user.profile.get_recent_entries(),
-              'picture_form': picture_form,
-              'redirect': 'profile_noname',
-              'is_requested': is_requested,
-              'show_stats': profile_user.profile.show_stats
+                'exercise_list': Exercise.objects.order_by('name'),
+                'is_friend': authenticated_user.profile.is_friends_with(profile_user),
+                'is_requested': profile_user.profile.requested_by(authenticated_user),
+                'max_cals': max_cals,
+                'picture_form': picture_form,
+                'profile_user': profile_user,
+                'recent_entries': authenticated_user.profile.get_recent_entries(),
+                'redirect': 'profile_noname',
+                'workout_blank': range(0,5-workout_list.count()),
+                'workout_list': workout_list,
+                'show_stats': profile_user.profile.show_stats,
+                'stat_dict': stat_dict
             })
     else:
         return redirect('hoosactive:login')
@@ -202,11 +202,7 @@ def send_request(request, username, user2):
             if recipient not in sender.profile.friends.all():
                 if sender not in recipient.profile.friend_requests.all():
                     prof.friend_requests.add(sender)
-                    return HttpResponseRedirect('/profile/'+recipient.username)
-                else:
-                    return HttpResponseRedirect('/profile/'+recipient.username)
-            else:
-                return HttpResponseRedirect('/profile/'+recipient.username)
+            return HttpResponseRedirect('/profile/'+recipient.username)
     # If requesting user not logged in, redirect to login
     else:
         return redirect('hoosactive:login')
@@ -275,8 +271,7 @@ def create(request, username):
                     Profile.objects.get(user=user).update_city()
                 return HttpResponseRedirect('/profile/'+request.user.username)
 
-        context = {'form': form}
-        return render(request, 'hoosactive/create.html', context)
+        return render(request, 'hoosactive/create.html', {'form': form})
     else:
         return redirect('hoosactive:login')
 

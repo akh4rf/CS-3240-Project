@@ -66,12 +66,16 @@ class Profile(models.Model):
             self.exercises.add(exercise)
     def get_recent_entries(self):
         return self.user.entry_set.all().order_by('date')[:5]
-    def get_recent_workouts(self):
+    def get_upcoming_workouts(self):
         return self.user.workout_set.filter(date__gt=timezone.now()).order_by('date')[:5]
     def update_city(self):
         for entry in self.user.entry_set.all():
             entry.city = self.city
             entry.save()
+    def is_friends_with(self, user):
+        return (user in self.friends.all())
+    def requested_by(self, user):
+        return (user in self.friend_requests.all())
 
 
 class EntryManager(models.Manager):
