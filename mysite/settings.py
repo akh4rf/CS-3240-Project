@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'fnd55#y@cv^wt)tqfphn!n7h%4_!bztfw#$yd%&c53vrmf_8k9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -157,7 +157,9 @@ SOCIALACCOUNT_AUTO_SIGNUP = False
 SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
 
-
+SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Activate Django-Heroku.
 try:
