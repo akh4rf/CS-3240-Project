@@ -12,7 +12,7 @@ class CreateUserForm(UserCreationForm):
 class PostForm(forms.ModelForm):
 	class Meta:
 		model = Profile
-		fields = ['age', 'height_feet', 'height_inches', 'weight_lbs', 'bio_text', 'city', 'state', 'show_stats']
+		fields = ['age', 'height_feet', 'height_inches', 'weight_lbs', 'bio_text', 'city', 'state', 'show_stats', 'receive_notifications']
 
 class ChangePictureForm(forms.ModelForm):
 	class Meta:

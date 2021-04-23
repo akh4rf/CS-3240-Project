@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse, resolve
 from django.utils import timezone
 from django.views import generic
+from django.core.mail import send_mail
+from mysite.settings import EMAIL_HOST_USER
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout
@@ -75,6 +77,14 @@ def register(request):
                 user = form.save()
                 username = form.cleaned_data.get('username')
                 messages.success(request, 'Account was created for ' + username)
+                # Send Welcome Email
+                subj = "Welcome to HoosActive!"
+                message = ( "Hey " + user.username + "!" + 
+                          "\n\nWelcome to the fastest growing health and fitness platform in Charlottesville! " + 
+                          "We look forward to seeing the progress you make toward achieving your goals! " + 
+                          "\n\nHappy Workouts!\nThe HoosActive Team" )
+                send_mail( subj, message, EMAIL_HOST_USER, [user.email] )
+
                 return redirect('hoosactive:login')
 
         return render(request, 'hoosactive/register.html', {'form': form})
@@ -202,6 +212,14 @@ def send_request(request, username, user2):
         else:
             if recipient not in sender.profile.friends.all():
                 if sender not in recipient.profile.friend_requests.all():
+                    # Send Email to requested friend if notifications are on
+                    if ( prof.receive_notifications is True ):
+                        subj = "New Friend Request Received!"
+                        message = ( "Hey " + recipient.username + "!" + 
+                                  "\n\nYou have received a new friend request from " + sender.username + 
+                                  "! Check out their profile at: https://hoos-active.herokuapp.com/" + sender.username + "/" +
+                                  "\n\nHappy Workouts!\nThe HoosActive Team" )
+                        send_mail( subj, message, EMAIL_HOST_USER, [recipient.email] )
                     prof.friend_requests.add(sender)
             return HttpResponseRedirect('/profile/'+recipient.username)
     # If requesting user not logged in, redirect to login
@@ -226,6 +244,14 @@ def request_response(request, username, user2, action):
                     responding_user.profile.friends.add(requesting_user)
                     requesting_user.profile.friends.add(responding_user)
                     responding_user.profile.friend_requests.remove(requesting_user)
+                    # Send Email to the requesting user if notifications are on
+                    if ( prof.receive_notifications is True ):
+                        subj = requesting_user.username + " Accepted Your Friend Request!"
+                        message = ( "Hey " + requesting_user.username + "!" + 
+                                   "\n\n" + responding_user.username + " has accepted you friend request!" +
+                                  "! Add more frineds at: https://hoos-active.herokuapp.com/" + requesting_user.username + "/friends/"
+                                  "\n\nHappy Workouts!\nThe HoosActive Team" )
+                        send_mail( subj, message, EMAIL_HOST_USER, [requesting_user.email] )
                 elif (action == "reject"):
                     responding_user.profile.friend_requests.remove(requesting_user)
             return HttpResponseRedirect('/profile/'+username+'/friends/')
@@ -263,12 +289,13 @@ def create(request, username):
             form = PostForm(request.POST)
             if form.is_valid():
                 show_stats = 'show_stats' in request.POST
+                receive_notifications = 'receive_notifications' in request.POST
                 bio_text = request.POST['bio_text'].replace("\'", "’").replace("\"", '“')
                 if (Profile.objects.filter(user=user).count() == 0):
-                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],bio_text,request.POST['city'],request.POST['state'],show_stats)
+                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],bio_text,request.POST['city'],request.POST['state'],show_stats,receive_notifications)
                 else:
                     Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
-                    weight_lbs=request.POST['weight_lbs'],bio_text=bio_text,city=request.POST['city'],state=request.POST['state'],show_stats=show_stats)
+                    weight_lbs=request.POST['weight_lbs'],bio_text=bio_text,city=request.POST['city'],state=request.POST['state'],show_stats=show_stats, receive_notifications=receive_notifications)
                     Profile.objects.get(user=user).update_city()
                 return HttpResponseRedirect('/profile/'+request.user.username)
 

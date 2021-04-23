@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'fnd55#y@cv^wt)tqfphn!n7h%4_!bztfw#$yd%&c53vrmf_8k9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -167,3 +167,13 @@ try:
     django_heroku.settings(locals())
 except ImportError:
     found = False
+
+
+# Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'hoosactive1@gmail.com'
+EMAIL_HOST_PASSWORD = '#w3Hrq^Z$ou4GhQe*phy'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
