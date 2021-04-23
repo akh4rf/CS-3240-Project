@@ -1,21 +1,17 @@
-from django.core import serializers
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
-from django.urls import reverse, resolve
 from django.utils import timezone
-from django.views import generic
 from django.core.mail import send_mail
 from mysite.settings import EMAIL_HOST_USER
+from .tokens import account_activation_token
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
 
-from .decorators import created_profile
 from .forms import CreateUserForm, PostForm, ChangePictureForm
 from .models import *
 
@@ -75,20 +71,43 @@ def register(request):
             form = CreateUserForm(request.POST)
             if form.is_valid():
                 user = form.save()
+                user.is_active = False
+                user.save()
                 username = form.cleaned_data.get('username')
-                messages.success(request, 'Account was created for ' + username)
-                # Send Welcome Email
-                subj = "Welcome to HoosActive!"
-                message = ( "Hey " + user.username + "!" + 
-                          "\n\nWelcome to the fastest growing health and fitness platform in Charlottesville! " + 
-                          "We look forward to seeing the progress you make toward achieving your goals! " + 
-                          "\n\nHappy Workouts!\nThe HoosActive Team" )
-                send_mail( subj, message, EMAIL_HOST_USER, [user.email] )
+                messages.success(request, 'Account was created for ' + username + '. We sent you an email to activate your account')
+                # Send activation email
+                url = request.META['HTTP_HOST'] + '/activate/' + urlsafe_base64_encode(force_bytes(user.pk)) + '/' + account_activation_token.make_token(user)
+                mes = ( 'Activate your email by clicking the following link:\n' +
+                       url
+                )
+                send_mail( 'Activate Email for HoosActive!', mes, EMAIL_HOST_USER, [user.email] )
 
                 return redirect('hoosactive:login')
 
         return render(request, 'hoosactive/register.html', {'form': form})
 
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        messages.add_message(request, messages.WARNING, str(e))
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        # Send Welcome Email
+        subj = "Welcome to HoosActive!"
+        message = ( "Hey " + user.username + "!" + 
+                  "\n\nWelcome to the fastest growing health and fitness platform in Charlottesville! " + 
+                  "We look forward to seeing the progress you make toward achieving your goals! " + 
+                  "\n\nHappy Workouts!\nThe HoosActive Team" )
+        send_mail( subj, message, EMAIL_HOST_USER, [user.email] )
+    else:
+        messages.add_message(request, messages.WARNING, 'Account activation link is invalid.')
+
+    return redirect('hoosactive:index')
 
 def login(request):
     if request.user.is_authenticated:
@@ -97,14 +116,19 @@ def login(request):
         if request.method == 'POST':
             username = request.POST.get('username')
             password = request.POST.get('password')
+            user_is_authenticated = User.objects.get(username=username)
 
-            user = authenticate(request, username=username, password=password)
+            if user_is_authenticated.is_active is False:
+                messages.info(request, 'Username OR password is incorrect, make sure your email is activated')
 
-            if user is not None:
-                auth_login(request, user)
-                return redirect('hoosactive:index')
-            else:
-                messages.info(request, 'Username OR password is incorrect')
+            else: 
+                user = authenticate(request, username=username, password=password)
+
+                if user is not None:
+                    auth_login(request, user)
+                    return redirect('hoosactive:index')
+                else:
+                    messages.info(request, 'Username OR password is incorrect, make sure you email is activated')
 
         return render(request, 'hoosactive/login.html', {})
 
@@ -283,6 +307,9 @@ def create(request, username):
     user = request.user
     if (username != user.username):
         return HttpResponseRedirect('/profile/'+username)
+    if user.is_active is False:
+        return HttpResponseRedirect('/activation_not_complete')
+
     form = PostForm()
     if user.is_authenticated:
         if request.method == 'POST':
@@ -293,6 +320,7 @@ def create(request, username):
                 bio_text = request.POST['bio_text'].replace("\'", "’").replace("\"", '“')
                 if (Profile.objects.filter(user=user).count() == 0):
                     Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],bio_text,request.POST['city'],request.POST['state'],show_stats,receive_notifications)
+                    user.profile.email_confirmed = True
                 else:
                     Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
                     weight_lbs=request.POST['weight_lbs'],bio_text=bio_text,city=request.POST['city'],state=request.POST['state'],show_stats=show_stats, receive_notifications=receive_notifications)
@@ -372,3 +400,4 @@ def search(request):
             return HttpResponseRedirect('/profile/'+request.user.username+"/friends/")
         else:
             return HttpResponseRedirect('/profile/'+profile_user.username)
+

@@ -54,6 +54,10 @@ class Profile(models.Model):
     # Toggles whether friend requests are sent to their emails
     receive_notifications = models.BooleanField(default=True)
 
+    # User Authentification and Password Reset
+    email_confirmed = models.BooleanField(default=False)
+    reset_password = models.BooleanField(default=False)
+
     objects = ProfileManager()
 
     def __str__(self):
