@@ -122,7 +122,7 @@ def login(request):
                 auth_login(request, user)
                 return redirect('hoosactive:index')
             else:
-                messages.info(request, 'Username OR password is incorrect, make sure you email is activated')
+                messages.info(request, 'Username OR password is incorrect, make sure your email is activated')
 
         return render(request, 'hoosactive/login.html', {})
 
@@ -401,7 +401,6 @@ def password_reset(request):
         if form.is_valid(): 
             email = request.POST.get('email')
             qs = User.objects.filter(email=email)
-            site = request.META['HTTP_HOST']
 
             if len(qs) > 0:
                 user = qs[0]
@@ -416,14 +415,11 @@ def password_reset(request):
                 )
                 send_mail( 'Reset Password for HoosActive', mes, EMAIL_HOST_USER, [user.email] )
 
-            messages.add_message(request, messages.SUCCESS, 'Email submitted. You should receive an email shortly')
+            messages.add_message(request, messages.SUCCESS, 'Email submitted. If your email is registered you should receive an email shortly')
         else:
             messages.add_message(request, messages.WARNING, 'Email not submitted. Check email syntax')
             return render(request, 'password/reset.html', {'form': form})
     return render(request, 'password/reset.html', {'form': UserForgotPasswordForm, } )
-
-def password_reset_done(requset):
-    pass
 
 def password_change(request, uidb64, token):
     if request.method == 'POST':
