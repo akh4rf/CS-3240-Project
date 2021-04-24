@@ -3,3 +3,4 @@ gunicorn
 django-allauth
 psycopg2
 Pillow
+six

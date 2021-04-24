@@ -4,15 +4,15 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.utils import timezone
 from django.core.mail import send_mail
 from mysite.settings import EMAIL_HOST_USER
-from .tokens import account_activation_token
+from .tokens import account_activation_token, password_reset_token
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 
 from django.contrib import messages
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth import login as auth_login
 
-from .forms import CreateUserForm, PostForm, ChangePictureForm
+from .forms import CreateUserForm, PostForm, ChangePictureForm, UserForgotPasswordForm, UserPasswordResetForm
 from .models import *
 
 import datetime
@@ -116,19 +116,13 @@ def login(request):
         if request.method == 'POST':
             username = request.POST.get('username')
             password = request.POST.get('password')
-            user_is_authenticated = User.objects.get(username=username)
+            user = authenticate(request, username=username, password=password)
 
-            if user_is_authenticated.is_active is False:
-                messages.info(request, 'Username OR password is incorrect, make sure your email is activated')
-
-            else: 
-                user = authenticate(request, username=username, password=password)
-
-                if user is not None:
-                    auth_login(request, user)
-                    return redirect('hoosactive:index')
-                else:
-                    messages.info(request, 'Username OR password is incorrect, make sure you email is activated')
+            if user is not None and user.is_active is not False:
+                auth_login(request, user)
+                return redirect('hoosactive:index')
+            else:
+                messages.info(request, 'Username OR password is incorrect, make sure you email is activated')
 
         return render(request, 'hoosactive/login.html', {})
 
@@ -320,7 +314,6 @@ def create(request, username):
                 bio_text = request.POST['bio_text'].replace("\'", "’").replace("\"", '“')
                 if (Profile.objects.filter(user=user).count() == 0):
                     Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],bio_text,request.POST['city'],request.POST['state'],show_stats,receive_notifications)
-                    user.profile.email_confirmed = True
                 else:
                     Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
                     weight_lbs=request.POST['weight_lbs'],bio_text=bio_text,city=request.POST['city'],state=request.POST['state'],show_stats=show_stats, receive_notifications=receive_notifications)
@@ -401,3 +394,84 @@ def search(request):
         else:
             return HttpResponseRedirect('/profile/'+profile_user.username)
 
+
+def password_reset(request):
+    if request.method == "POST":
+        form = UserForgotPasswordForm(request.POST)
+        if form.is_valid(): 
+            email = request.POST.get('email')
+            qs = User.objects.filter(email=email)
+            site = request.META['HTTP_HOST']
+
+            if len(qs) > 0:
+                user = qs[0]
+                user.is_active = False
+                user.save()
+
+
+                # Send activation email
+                url = request.META['HTTP_HOST'] + '/password/change/' + urlsafe_base64_encode(force_bytes(user.pk)) + '/' + account_activation_token.make_token(user)
+                mes = ( 'Reset your password by clicking the following link:\n' +
+                       url
+                )
+                send_mail( 'Reset Password for HoosActive', mes, EMAIL_HOST_USER, [user.email] )
+
+            messages.add_message(request, messages.SUCCESS, 'Email submitted. You should receive an email shortly')
+        else:
+            messages.add_message(request, messages.WARNING, 'Email not submitted. Check email syntax')
+            return render(request, 'password/reset.html', {'form': form})
+    return render(request, 'password/reset.html', {'form': UserForgotPasswordForm, } )
+
+def password_reset_done(requset):
+    pass
+
+def password_change(request, uidb64, token):
+    if request.method == 'POST':
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+            messages.add_message(request, messages.WARNING, str(e))
+            user = None
+
+        if user is not None and password_reset_token.check_token(user, token):
+            form = UserPasswordResetForm(user=user, data=request.POST)
+            if form.is_valid():
+                form.save()
+                update_session_auth_hash(request, form.user)
+
+                user.is_active = True
+                user.save()
+                messages.add_message(request, messages.SUCCESS, 'Password reset successfully.')
+                return redirect('hoosactive:login')
+            else:
+                context = {
+                    'form': form,
+                    'uid': uidb64,
+                    'token': token
+                }
+                messages.add_message(request, messages.WARNING, 'Password could not be reset.')
+                return render(request, 'password/change.html', context)
+        else:
+            messages.add_message(request, messages.WARNING, 'Password reset link is invalid.')
+            messages.add_message(request, messages.WARNING, 'Please request a new password reset.')
+
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        messages.add_message(request, messages.WARNING, str(e))
+        user = None
+
+    if user is not None and password_reset_token.check_token(user, token):
+        context = {
+            'form': UserPasswordResetForm(user),
+            'uid': uidb64,
+            'token': token
+        }
+        return render(request, 'password/change.html', context)
+    else:
+        messages.add_message(request, messages.WARNING, 'Password reset link is invalid.')
+        messages.add_message(request, messages.WARNING, 'Please request a new password reset.')
+
+    return HttpResponseRedirect('/')
