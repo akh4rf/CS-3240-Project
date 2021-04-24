@@ -4,6 +4,7 @@ from hoosactive.models import Entry, Exercise, Workout
 from hoosactive.models import Entry, Exercise
 from datetime import datetime, timedelta
 from django.urls import reverse
+from django.core import mail
 import pytz
 
 
@@ -54,12 +55,12 @@ class LoginTest(TestCase):
 
 class RegisterTest(TestCase):
 
-    # Test Correct Registration Input
+    # Test Login without activation
     def test_correct_registration(self):
-        c = Client()
+        c = Client(HTTP_HOST='example.com')
         response = c.post('/register/', {'username': 'testuser', 'email': 'testuser@gmail.com', 'password1': '!Password1', 'password2': '!Password1'})
         logged_in = c.login(username='testuser', password='!Password1')
-        self.assertTrue(logged_in)
+        self.assertFalse(logged_in)
 
     # Test Non-Matching Password Causing Non-Redirect
     def test_nonmatching_passwords(self):

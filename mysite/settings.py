@@ -177,3 +177,6 @@ EMAIL_HOST_PASSWORD = '#w3Hrq^Z$ou4GhQe*phy'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+# Fix Travis Warnings
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
