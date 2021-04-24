@@ -235,7 +235,7 @@ def send_request(request, username, user2):
                         subj = "New Friend Request Received!"
                         message = ( "Hey " + recipient.username + "!" + 
                                   "\n\nYou have received a new friend request from " + sender.username + 
-                                  "! Check out their profile at: https://hoos-active.herokuapp.com/" + sender.username + "/" +
+                                  "! Check out their profile at: " + request.META['HTTP_HOST'] + '/profile/' + sender.username + "/" +
                                   "\n\nHappy Workouts!\nThe HoosActive Team" )
                         send_mail( subj, message, EMAIL_HOST_USER, [recipient.email] )
                     prof.friend_requests.add(sender)
@@ -264,10 +264,10 @@ def request_response(request, username, user2, action):
                     responding_user.profile.friend_requests.remove(requesting_user)
                     # Send Email to the requesting user if notifications are on
                     if ( prof.receive_notifications is True ):
-                        subj = requesting_user.username + " Accepted Your Friend Request!"
+                        subj = responding_user.username + " Accepted Your Friend Request!"
                         message = ( "Hey " + requesting_user.username + "!" + 
                                    "\n\n" + responding_user.username + " has accepted you friend request!" +
-                                  "! Add more frineds at: https://hoos-active.herokuapp.com/" + requesting_user.username + "/friends/"
+                                  "! Add more frineds at: " + request.META['HTTP_HOST'] + '/profile/' + requesting_user.username + "/friends/"
                                   "\n\nHappy Workouts!\nThe HoosActive Team" )
                         send_mail( subj, message, EMAIL_HOST_USER, [requesting_user.email] )
                 elif (action == "reject"):
