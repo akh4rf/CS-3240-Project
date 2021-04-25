@@ -70,6 +70,14 @@ def register(request):
         if request.method == 'POST':
             form = CreateUserForm(request.POST)
             if form.is_valid():
+                # Check if email has already been registered
+                check_email = request.POST.get('email')
+                check_user = User.objects.filter(email=check_email)
+                print(check_user)
+                if len( check_user ) > 0:
+                    messages.add_message(request, messages.WARNING, 'This email or username has already been registered to another user')
+                    return render(request, 'hoosactive/register.html',{'form': form})
+
                 user = form.save()
                 user.is_active = False
                 user.save()
