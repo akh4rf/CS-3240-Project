@@ -7,8 +7,12 @@
         <form class="m-4" action="{% url 'hoosactive:search' %}" method="GET">
             <button class="p-1 pb-3 btn btn-outline-none" type="submit"><i class="bi bi-search"></i></button>
             <input class="col-8" style="font-size: 18px;" type="text" placeholder="Search Username..." name="search_profile">
+            {% if error_message %}
+            <p style="color: red;" class="ml-5 pl-2">NO USER FOUND</p>
+            {% endif %}
         </form>
     </div>
+
     {% if show_requests is True %}
     <div class="col">
         <button style="font-size: 18px; float: right;" class="m-3 btn btn-outline-none font-weight-bold" data-toggle="modal" data-target="#FriendRequestsModal">
