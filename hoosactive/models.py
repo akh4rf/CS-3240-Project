@@ -2,6 +2,9 @@ from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+# Validation
+from django.forms import DecimalField
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
@@ -33,12 +36,12 @@ class Profile(models.Model):
     # List of Users who have requested friends
     friend_requests = models.ManyToManyField(User, related_name='friend_requests_set', blank=True)
     # Age
-    age = models.PositiveSmallIntegerField()
+    age = models.PositiveSmallIntegerField(validators=[MinValueValidator(4), MaxValueValidator(125)])
     # Height
-    height_feet = models.PositiveSmallIntegerField()
-    height_inches = models.PositiveSmallIntegerField()
+    height_feet = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(8)])
+    height_inches = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(11)])
     # Weight
-    weight_lbs = models.DecimalField(decimal_places=1,max_digits=4)
+    weight_lbs = models.DecimalField(decimal_places=1,max_digits=4,validators=[MinValueValidator(0.1), MaxValueValidator(999.9)])
     # Profile Picture
     profile_pic = models.ImageField(default="default.jpg")
     # Bio
@@ -115,9 +118,9 @@ class Workout(models.Model):
     # Foreign Key to related User
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # Short Description
-    desc = models.CharField(max_length=30)
+    desc = models.CharField(max_length=30, blank=True)
     # Scheduled Date
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now, blank=True)
 
     objects = WorkoutManager()
 
