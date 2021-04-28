@@ -118,9 +118,9 @@ class Workout(models.Model):
     # Foreign Key to related User
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # Short Description
-    desc = models.CharField(max_length=30)
+    desc = models.CharField(max_length=30, blank=True)
     # Scheduled Date
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now, blank=True)
 
     objects = WorkoutManager()
 

@@ -54,7 +54,8 @@ def log_exercise(request, redir):
 
                 # calories_burned min/max
                 calories_burned = max(0, int(request.POST['calories_burned']))
-                calories_burned = min(999, calories_burned)
+                calories_burned = min(9999, calories_burned)
+
                 # duration min/max
                 duration = max(0.00, round(float(request.POST['duration'])),2)
                 duration = min(99.99, round(float(request.POST['duration'])),2)
@@ -67,7 +68,7 @@ def log_exercise(request, redir):
 def schedule_workout(request, redir):
     user = request.user
     if (user.is_authenticated):
-        if request.method == 'POST':
+        if request.method == 'POST':            
             workout = Workout.objects.schedule_workout(user,request.POST['description'],request.POST['date'])
             return redirect('hoosactive:'+redir)
     else:
