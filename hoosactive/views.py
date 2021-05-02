@@ -2,11 +2,14 @@ from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
 from django.utils import timezone
+
 from django.core.mail import send_mail
 from mysite.settings import EMAIL_HOST_USER
 from .tokens import account_activation_token, password_reset_token
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
+from django.views import generic
+from django.template import loader
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, update_session_auth_hash
@@ -48,7 +51,16 @@ def log_exercise(request, redir):
             if request.method == 'POST':
                 exer = Exercise.objects.get(name=request.POST['drop'])
                 user.profile.add_exercise(exer.name)
-                entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],request.POST['calories_burned'],request.POST['duration'])
+
+                # calories_burned min/max
+                calories_burned = max(0, int(request.POST['calories_burned']))
+                calories_burned = min(9999, calories_burned)
+
+                # duration min/max
+                duration = max(0.00, round(float(request.POST['duration'])),2)
+                duration = min(99.99, round(float(request.POST['duration'])),2)
+
+                entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],calories_burned,duration)
                 return redirect('hoosactive:'+redir)
     else:
         return redirect('hoosactive:login')
@@ -168,6 +180,10 @@ def profile(request, username):
                     user=profile_user.id
                 ).filter(
                     date__day=date.day
+                ).filter(
+                    date__month=date.month
+                ).filter(
+                    date__year=date.year
                 ).values(
                     'username',
                 ).annotate(
@@ -201,8 +217,15 @@ def profile(request, username):
         return redirect('hoosactive:login')
 
 def friends(request, username):
+    return HttpResponseRedirect("/profile/"+username+"/friends/all/")
+
+def friends_error(request, username, error):
     authenticated_user = request.user
     profile_user = User.objects.get(username=username)
+
+    error_message = False
+    if error == "nouserfound":
+        error_message = True
 
     if authenticated_user.is_authenticated:
         try:
@@ -214,6 +237,7 @@ def friends(request, username):
                 return redirect('hoosactive:index')
         else:
             return render(request, "hoosactive/friends.html", {
+                'error_message': error_message,
                 'friends_list': profile_user.profile.friends.all(),
                 'request_count': profile_user.profile.friend_requests.count(),
                 'request_list': authenticated_user.profile.friend_requests.all(),
@@ -362,7 +386,7 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
         for friend in request.user.profile.friends.all():
             friends_list.append(friend)
 
-    entry_list = Entry.objects.filter(exercise=exercise.id)
+    entry_list = Entry.objects.filter(exercise=exercise.id).filter(date__lte=timezone.now())
 
     if (population=="friends"):
         entry_list = entry_list.filter(user__in=friends_list)
@@ -392,7 +416,7 @@ def search(request):
     try:
         profile_user = User.objects.get(username=request.GET['search_profile'])
     except:
-        return HttpResponseRedirect('/profile/'+request.user.username+"/friends/")
+        return HttpResponseRedirect('/profile/'+request.user.username+"/friends/nouserfound/")
     else:
         try:
             profile_user.profile
