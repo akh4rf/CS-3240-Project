@@ -68,7 +68,7 @@ def log_exercise(request, redir):
 def schedule_workout(request, redir):
     user = request.user
     if (user.is_authenticated):
-        if request.method == 'POST':            
+        if request.method == 'POST':
             workout = Workout.objects.schedule_workout(user,request.POST['description'],request.POST['date'])
             return redirect('hoosactive:'+redir)
     else:
@@ -143,6 +143,10 @@ def profile(request, username):
                     user=profile_user.id
                 ).filter(
                     date__day=date.day
+                ).filter(
+                    date__month=date.month
+                ).filter(
+                    date__year=date.year
                 ).values(
                     'username',
                 ).annotate(
@@ -325,7 +329,7 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
         for friend in request.user.profile.friends.all():
             friends_list.append(friend)
 
-    entry_list = Entry.objects.filter(exercise=exercise.id)
+    entry_list = Entry.objects.filter(exercise=exercise.id).filter(date__lte=timezone.now())
 
     if (population=="friends"):
         entry_list = entry_list.filter(user__in=friends_list)

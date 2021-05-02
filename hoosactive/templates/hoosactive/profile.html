@@ -11,7 +11,7 @@
         <!-- This is a chart. -->
         <div style="width: 100%;">
           <div style="width: 500px; margin: auto;">
-            <text>Calories Burned Per Day</text>
+            <text style="font-size: 24px;">Calories Burned Per Day</text>
             <div class="profile-chart-row" style="height: 224px; align-items: flex-end;">
               {% for day, cals in stat_dict.items %}
               <div style="width: calc(100%/7); height: calc(200px*{{ cals.0 }}/{{ max_cals }} + 24px); padding: 0 0.3%;">
