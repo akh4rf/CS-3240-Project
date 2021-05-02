@@ -23,5 +23,8 @@ urlpatterns = [
     path('register/', views.register, name="register"),
     path('leaderboard/', views.leaderboard, name="leaderboard"),
     path('leaderboard/<str:exercise_name>/<str:sort>/<str:timeframe>/<str:population>/', views.exercise_leaderboard, name="exercise_leaderboard"),
-    path('search/', views.search, name='search')
+    path('search/', views.search, name='search'),
+    path('activate/<uidb64>/<token>', views.activate, name='activate'),
+    path('password/reset/', views.password_reset, name='password_reset'),
+    path('password/change/<uidb64>/<token>', views.password_change, name='password_change'),
 ]

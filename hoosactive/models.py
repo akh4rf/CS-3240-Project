@@ -18,9 +18,9 @@ class Exercise(models.Model):
         return self.name
 
 class ProfileManager(models.Manager):
-    def create_profile(self, us, age, hf, hi, we, bio, ci, st, ss):
+    def create_profile(self, us, age, hf, hi, we, bio, ci, st, ss, rn):
         profile = self.create(user=us,age=age,height_feet=hf,height_inches=hi,
-                    weight_lbs=we,bio_text=bio,city=ci,state=st,show_stats=ss)
+                    weight_lbs=we,bio_text=bio,city=ci,state=st,show_stats=ss, receive_notifications=rn)
         return profile
 
 class Profile(models.Model):
@@ -53,6 +53,9 @@ class Profile(models.Model):
 
     # Toggles whether stats are shown or not
     show_stats = models.BooleanField(default=True)
+
+    # Toggles whether friend requests are sent to their emails
+    receive_notifications = models.BooleanField(default=True)
 
     objects = ProfileManager()
 

@@ -6,3 +6,4 @@ django-heroku
 django-allauth
 psycopg2
 Pillow
+six

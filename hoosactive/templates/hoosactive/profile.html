@@ -169,10 +169,12 @@
             <form method="POST" action="" enctype="multipart/form-data">
               {% csrf_token %}
               {{picture_form.profile_pic}}
-            <input class="btn btn-primary" type="submit" name="Update Information">
+              <input class="btn btn-primary" type="submit" name="Update Information" value="Update Picture">
             </form>
           </div>
-
+					<div class="d-flex justify-content-center" style="color: rgb(0,100,255);">
+						<a href="{% url 'hoosactive:password_reset' %}" class="ml-2" style="text-decoration: none;">Change Password</a>
+					</div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>

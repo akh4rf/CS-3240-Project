@@ -1,21 +1,21 @@
-from django.core import serializers
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
-from django.urls import reverse, resolve
 from django.utils import timezone
+
+from django.core.mail import send_mail
+from mysite.settings import EMAIL_HOST_USER
+from .tokens import account_activation_token, password_reset_token
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
 from django.views import generic
 from django.template import loader
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth import login as auth_login
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
 
-from .decorators import created_profile
-from .forms import CreateUserForm, PostForm, ChangePictureForm
+from .forms import CreateUserForm, PostForm, ChangePictureForm, UserForgotPasswordForm, UserPasswordResetForm
 from .models import *
 
 import datetime
@@ -82,13 +82,51 @@ def register(request):
         if request.method == 'POST':
             form = CreateUserForm(request.POST)
             if form.is_valid():
+                # Check if email has already been registered
+                check_email = request.POST.get('email')
+                check_user = User.objects.filter(email=check_email)
+                if len( check_user ) > 0:
+                    messages.add_message(request, messages.WARNING, 'This email or username has already been registered to another user')
+                    return render(request, 'hoosactive/register.html',{'form': form})
+
                 user = form.save()
+                user.is_active = False
+                user.save()
                 username = form.cleaned_data.get('username')
-                messages.success(request, 'Account was created for ' + username)
+                messages.success(request, 'Account was created for ' + username + '. We sent you an email to activate your account')
+                # Send activation email
+                url = request.META['HTTP_HOST'] + '/activate/' + urlsafe_base64_encode(force_bytes(user.pk)) + '/' + account_activation_token.make_token(user)
+                mes = ( 'Activate your email by clicking the following link:\n' +
+                       url
+                )
+                send_mail( 'Activate Email for HoosActive!', mes, EMAIL_HOST_USER, [user.email] )
+
                 return redirect('hoosactive:login')
 
         return render(request, 'hoosactive/register.html', {'form': form})
 
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        messages.add_message(request, messages.WARNING, str(e))
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        # Send Welcome Email
+        subj = "Welcome to HoosActive!"
+        message = ( "Hey " + user.username + "!" + 
+                  "\n\nWelcome to the fastest growing health and fitness platform in Charlottesville! " + 
+                  "We look forward to seeing the progress you make toward achieving your goals! " + 
+                  "\n\nHappy Workouts!\nThe HoosActive Team" )
+        send_mail( subj, message, EMAIL_HOST_USER, [user.email] )
+    else:
+        messages.add_message(request, messages.WARNING, 'Account activation link is invalid.')
+
+    return redirect('hoosactive:index')
 
 def login(request):
     if request.user.is_authenticated:
@@ -97,14 +135,13 @@ def login(request):
         if request.method == 'POST':
             username = request.POST.get('username')
             password = request.POST.get('password')
-
             user = authenticate(request, username=username, password=password)
 
-            if user is not None:
+            if user is not None and user.is_active is not False:
                 auth_login(request, user)
                 return redirect('hoosactive:index')
             else:
-                messages.info(request, 'Username OR password is incorrect')
+                messages.info(request, 'Username OR password is incorrect, make sure your email is activated')
 
         return render(request, 'hoosactive/login.html', {})
 
@@ -224,6 +261,14 @@ def send_request(request, username, user2):
         else:
             if recipient not in sender.profile.friends.all():
                 if sender not in recipient.profile.friend_requests.all():
+                    # Send Email to requested friend if notifications are on
+                    if ( prof.receive_notifications is True ):
+                        subj = "New Friend Request Received!"
+                        message = ( "Hey " + recipient.username + "!" + 
+                                  "\n\nYou have received a new friend request from " + sender.username + 
+                                  "! Check out their profile at: " + request.META['HTTP_HOST'] + '/profile/' + sender.username + "/" +
+                                  "\n\nHappy Workouts!\nThe HoosActive Team" )
+                        send_mail( subj, message, EMAIL_HOST_USER, [recipient.email] )
                     prof.friend_requests.add(sender)
             return HttpResponseRedirect('/profile/'+recipient.username)
     # If requesting user not logged in, redirect to login
@@ -248,6 +293,14 @@ def request_response(request, username, user2, action):
                     responding_user.profile.friends.add(requesting_user)
                     requesting_user.profile.friends.add(responding_user)
                     responding_user.profile.friend_requests.remove(requesting_user)
+                    # Send Email to the requesting user if notifications are on
+                    if ( prof.receive_notifications is True ):
+                        subj = responding_user.username + " Accepted Your Friend Request!"
+                        message = ( "Hey " + requesting_user.username + "!" + 
+                                   "\n\n" + responding_user.username + " has accepted you friend request!" +
+                                  "! Add more frineds at: " + request.META['HTTP_HOST'] + '/profile/' + requesting_user.username + "/friends/"
+                                  "\n\nHappy Workouts!\nThe HoosActive Team" )
+                        send_mail( subj, message, EMAIL_HOST_USER, [requesting_user.email] )
                 elif (action == "reject"):
                     responding_user.profile.friend_requests.remove(requesting_user)
             return HttpResponseRedirect('/profile/'+username+'/friends/')
@@ -279,18 +332,22 @@ def create(request, username):
     user = request.user
     if (username != user.username):
         return HttpResponseRedirect('/profile/'+username)
+    if user.is_active is False:
+        return HttpResponseRedirect('/activation_not_complete')
+
     form = PostForm()
     if user.is_authenticated:
         if request.method == 'POST':
             form = PostForm(request.POST)
             if form.is_valid():
                 show_stats = 'show_stats' in request.POST
+                receive_notifications = 'receive_notifications' in request.POST
                 bio_text = request.POST['bio_text'].replace("\'", "’").replace("\"", '“')
                 if (Profile.objects.filter(user=user).count() == 0):
-                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],bio_text,request.POST['city'],request.POST['state'],show_stats)
+                    Profile.objects.create_profile(user,request.POST['age'],request.POST['height_feet'],request.POST['height_inches'],request.POST['weight_lbs'],bio_text,request.POST['city'],request.POST['state'],show_stats,receive_notifications)
                 else:
                     Profile.objects.filter(user=user).update(age=request.POST['age'],height_feet=request.POST['height_feet'],height_inches=request.POST['height_inches'],
-                    weight_lbs=request.POST['weight_lbs'],bio_text=bio_text,city=request.POST['city'],state=request.POST['state'],show_stats=show_stats)
+                    weight_lbs=request.POST['weight_lbs'],bio_text=bio_text,city=request.POST['city'],state=request.POST['state'],show_stats=show_stats, receive_notifications=receive_notifications)
                     Profile.objects.get(user=user).update_city()
                 return HttpResponseRedirect('/profile/'+request.user.username)
 
@@ -367,3 +424,81 @@ def search(request):
             return HttpResponseRedirect('/profile/'+request.user.username+"/friends/")
         else:
             return HttpResponseRedirect('/profile/'+profile_user.username)
+
+
+def password_reset(request):
+    if request.method == "POST":
+        form = UserForgotPasswordForm(request.POST)
+        if form.is_valid(): 
+            email = request.POST.get('email')
+            qs = User.objects.filter(email=email)
+
+            if len(qs) > 0:
+                user = qs[0]
+                user.is_active = False
+                user.save()
+
+
+                # Send activation email
+                url = request.META['HTTP_HOST'] + '/password/change/' + urlsafe_base64_encode(force_bytes(user.pk)) + '/' + account_activation_token.make_token(user)
+                mes = ( 'Reset your password by clicking the following link:\n' +
+                       url
+                )
+                send_mail( 'Reset Password for HoosActive', mes, EMAIL_HOST_USER, [user.email] )
+
+            messages.add_message(request, messages.SUCCESS, 'Email submitted. If your email is registered you should receive an email shortly')
+        else:
+            messages.add_message(request, messages.WARNING, 'Email not submitted. Check email syntax')
+            return render(request, 'password/reset.html', {'form': form})
+    return render(request, 'password/reset.html', {'form': UserForgotPasswordForm, } )
+
+def password_change(request, uidb64, token):
+    if request.method == 'POST':
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+            messages.add_message(request, messages.WARNING, str(e))
+            user = None
+
+        if user is not None and password_reset_token.check_token(user, token):
+            form = UserPasswordResetForm(user=user, data=request.POST)
+            if form.is_valid():
+                form.save()
+                update_session_auth_hash(request, form.user)
+
+                user.is_active = True
+                user.save()
+                messages.add_message(request, messages.SUCCESS, 'Password reset successfully.')
+                return redirect('hoosactive:login')
+            else:
+                context = {
+                    'form': form,
+                    'uid': uidb64,
+                    'token': token
+                }
+                messages.add_message(request, messages.WARNING, 'Password could not be reset.')
+                return render(request, 'password/change.html', context)
+        else:
+            messages.add_message(request, messages.WARNING, 'Password reset link is invalid.')
+            messages.add_message(request, messages.WARNING, 'Please request a new password reset.')
+
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        messages.add_message(request, messages.WARNING, str(e))
+        user = None
+
+    if user is not None and password_reset_token.check_token(user, token):
+        context = {
+            'form': UserPasswordResetForm(user),
+            'uid': uidb64,
+            'token': token
+        }
+        return render(request, 'password/change.html', context)
+    else:
+        messages.add_message(request, messages.WARNING, 'Password reset link is invalid.')
+        messages.add_message(request, messages.WARNING, 'Please request a new password reset.')
+
+    return HttpResponseRedirect('/')
