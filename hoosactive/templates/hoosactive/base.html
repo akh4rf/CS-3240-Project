@@ -28,44 +28,43 @@
       <img style="max-width:100%; max-height:100%;" src="{% static 'hoosactive/images/hoosactive_logo.png' %}" alt="">
     </div>
   </a>
-  <div style="color: white; width: 600px; float: right; text-align: center; font-size: 20px;">
+  <div style="display: flex; color: white; width: 600px; float: right; text-align: center; font-size: 20px;">
     {% if user.is_authenticated %}
-    <a style="text-decoration: none; padding: 23px 0; width: 33%; display: inline-block;" href="{% url 'hoosactive:profile' user.username %}">
-      Profile
-    </a><a style="text-decoration: none; padding: 23px 0; width: 33%; display: inline-block;" href="{% url 'hoosactive:leaderboard' %}">
-    Leaderboard
-  </a>
+    <a class="b12-nav-item" href="{% url 'hoosactive:profile' user.username %}">
+      <div><div>Profile</div></div>
+    </a><a class="b12-nav-item" href="{% url 'hoosactive:leaderboard' %}">
+      <div><div>Leaderboard</div></div>
+    </a>
     <!-- Sign Out with Modal confirmation. -->
-    <div style="text-decoration: none; padding: 23px 5px; width: 33%; display: inline-block;">
-      <button style="background-color: transparent; border-color: transparent; font-size: 19px; padding: 0; margin-top: -6.5px;" class="btn btn-primary" data-toggle="modal" data-target="#SignOutModal">Sign Out</button>
-      <!-- Modal -->
-      <div id="SignOutModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <h3 class="modal-title text-dark text-left">Are you sure you want to sign out?</h3>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <form method="post" action="{% url 'account_logout' %}">
-                  {% csrf_token %}
-                  <button class="btn btn-primary">{% trans 'Sign Out' %}</button>
-                </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <button id="SignOutNavBtn" class="b12-nav-item" style="background-color: transparent; border-color: transparent;" class="btn btn-primary" data-toggle="modal" data-target="#SignOutModal">Sign Out</button>
     {% else %}
-    <a style="text-decoration: none; padding: 0px 0; height: 20px ; width: 100%; display: inline-block;" href="{% url 'hoosactive:login' %}">Register/Sign In</a>
+    <div class="b12-nav-item"></div>
+    <div class="b12-nav-item"></div>
+    <a class="b12-nav-item" href="{% url 'hoosactive:login' %}">Register/Sign In</a>
     {% endif %}
-
   </div>
-
 </nav>
 
 {% block content %}{% endblock %}
+
+<!-- Sign Out Modal -->
+<div id="SignOutModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title text-dark text-left">Are you sure you want to sign out?</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          <button class="btn btn-primary">{% trans 'Sign Out' %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <footer></footer>
 <!-- Bootstrap popper.js -->

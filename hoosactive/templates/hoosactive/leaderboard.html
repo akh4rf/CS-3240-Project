@@ -41,7 +41,11 @@
               <div style="padding: 10px;">
                 <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/duration_hours/{{ timeframe }}/{{ population }}/">Total Hours</a>
               </div>
-              <hr style="margin: 5px 0;">
+              {% endif %}
+          </div>
+          <div style="color: black; background-color: white; margin: 20px 0;">
+              <div class="bg-blue" style="padding: 10px; color: white;">Timeframe</div>
+              {% if exercise %}
               <div style="padding: 10px;">
                 <a style="font-size: 24px;" class="btn login_btn" href="../../day/{{ population }}/">Day</a>
               </div>
@@ -51,7 +55,11 @@
               <div style="padding: 10px;">
                 <a style="font-size: 24px;" class="btn login_btn" href="../../month/{{ population }}/">Month</a>
               </div>
-              <hr style="margin: 5px 0;">
+              {% endif %}
+          </div>
+          <div style="color: black; background-color: white;">
+              <div class="bg-blue" style="padding: 10px; color: white;">Filter By</div>
+              {% if exercise %}
               <div style="padding: 10px;">
                 <a style="font-size: 24px;" class="btn login_btn" href="../friends/">Friends</a>
               </div>
