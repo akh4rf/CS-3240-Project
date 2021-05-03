@@ -1,12 +1,12 @@
 language: python
 python:
-- '3.8'
+  - "3.8"
 install:
-- pip install -r requirements-travis.txt
+  - pip install -r requirements-travis.txt
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 script:
-- python manage.py test
+  - python manage.py test
 services:
   - postgresql
 deploy:
@@ -16,3 +16,5 @@ deploy:
   app: hoos-active
   on:
     repo: uva-cs3240-s21/project-b-12
+env:
+  - DJANGO_DEBUG=FALSE SECURE_SSL_REDIRECT=TRUE
