@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from hoosactive.models import Entry, Exercise, Workout
+from hoosactive.models import Entry, Exercise, Workout, Profile
 from hoosactive.models import Entry, Exercise
 from datetime import datetime, timedelta
 from django.urls import reverse
@@ -274,6 +274,75 @@ class LeaderboardTest(TestCase):
         self.assertTrue( entry_list_hours[0]['username'] == "testuser2" )
         self.assertTrue( entry_list_hours[1]['username'] == "testuser" )
 
+    # Test to see if scores are correctly sorted with friends
+    def test_correct_order_friends_running(self):
+        User = get_user_model()
+        user1 = User.objects.get( username = 'testuser' )
+        Profile.objects.create_profile( us=user1, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+        user2 = User.objects.get( username = 'testuser2' )
+        Profile.objects.create_profile( us=user2, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+
+        exercise = Exercise.objects.get( name = "Running" )
+        date = pytz.utc.localize( datetime.now() )
+        Entry.objects.create( user=user1, username=user1.username,
+                             city="Tacoma", exercise=exercise, date=date,
+                             calories=1000, duration_hours=35 )
+        Entry.objects.create( user=user2, username=user2.username,
+                             city="Charlottesville", exercise=exercise,
+                             date=date, calories=500, duration_hours=50 )
+
+        c = Client()
+
+        # Sort by calories
+        c.login( username = 'testuser', password = "!Password1" )
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "calories", "week", "all"] ), secure=True )
+        entry_list = response.context['entry_list']
+        self.assertEqual( len(entry_list), 2 )
+
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "calories", "week", "friends"] ), secure=True )
+        # Sort by hours
+        entry_list = response.context['entry_list']
+        self.assertEqual( len(entry_list), 1 )
+
+    def test_correct_order_friends_pushups(self):
+        User = get_user_model()
+        user1 = User.objects.get( username = 'testuser' )
+        Profile.objects.create_profile( us=user1, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+        user2 = User.objects.get( username = 'testuser2' )
+        Profile.objects.create_profile( us=user2, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+
+        exercise = Exercise.objects.get( name = "Running" )
+        date = pytz.utc.localize( datetime.now() )
+        Entry.objects.create( user=user1, username=user1.username,
+                             city="Tacoma", exercise=exercise, date=date,
+                             calories=1000, duration_hours=35 )
+        Entry.objects.create( user=user2, username=user2.username,
+                             city="Charlottesville", exercise=exercise,
+                             date=date, calories=500, duration_hours=50 )
+
+        c = Client()
+
+        # Sort by calories
+        c.login( username = 'testuser', password = "!Password1" )
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "calories", "week", "all"] ), secure=True )
+        entry_list = response.context['entry_list']
+        self.assertEqual( len(entry_list), 2 )
+        self.assertEqual( entry_list[0]['username'], "testuser" )
+
+        response = c.get( reverse( 'hoosactive:exercise_leaderboard',
+                                  args=["Running", "calories", "week", "friends"] ), secure=True )
+        # Sort by hours
+        entry_list = response.context['entry_list']
+        self.assertEqual( len(entry_list), 1)
+        self.assertEqual( entry_list[0]['username'], "testuser" )
+ 
     # Test to see if scores are in the correct order and sorted properly
     def test_correct_order_many(self):
         User = get_user_model()
@@ -365,9 +434,57 @@ class FriendRequestTest(TestCase):
         user2 = User.objects.create(username='testuser2')
         user2.set_password('!Password1')
         user2.save()
+        user3 = User.objects.create(username='testuser3')
+        user3.set_password('!Password1')
+        user3.save()
+        user4 = User.objects.create(username='testuser4')
+        user4.set_password('!Password1')
+        user4.save()
 
-    def test_friend_request_accept(self):
+    def test_not_friends(self):
         User = get_user_model()
         user = User.objects.get( username='testuser' )
+        Profile.objects.create_profile( us=user, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
         user2 = User.objects.get( username='testuser2' )
+        Profile.objects.create_profile( us=user2, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
 
+        self.assertFalse( user.profile.is_friends_with(user2) )
+
+    def test_friend_add(self):
+        User = get_user_model()
+        user = User.objects.get( username='testuser' )
+        Profile.objects.create_profile( us=user, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+        user2 = User.objects.get( username='testuser2' )
+        Profile.objects.create_profile( us=user2, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+
+        user.profile.friends.add(user2)
+        user2.profile.friends.add(user)
+
+        self.assertEqual( user.profile.friends.all()[0], user2 )
+        self.assertEqual( user2.profile.friends.all()[0], user )
+
+    def test_freind_add_many(self):
+        User = get_user_model()
+        user = User.objects.get( username='testuser' )
+        Profile.objects.create_profile( us=user, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+        user2 = User.objects.get( username='testuser2' )
+        Profile.objects.create_profile( us=user2, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+        user3 = User.objects.get( username='testuser3' )
+        Profile.objects.create_profile( us=user3, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+        user4 = User.objects.get( username='testuser4' )
+        Profile.objects.create_profile( us=user4, age=23,hf=6, hi=4, we=185, ci='Tacoma',
+                                       st='WA', ss=True, rn=False, bio="Stuff" )
+
+        user.profile.friends.add(user2)
+        user.profile.friends.add(user3)
+        user.profile.friends.add(user4)
+        self.assertEqual( user.profile.friends.all()[0], user2 )
+        self.assertEqual( user.profile.friends.all()[1], user3 )
+        self.assertEqual( user.profile.friends.all()[2], user4 )
