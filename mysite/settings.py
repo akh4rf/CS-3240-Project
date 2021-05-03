@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'fnd55#y@cv^wt)tqfphn!n7h%4_!bztfw#$yd%&c53vrmf_8k9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ['DJANGO_DEBUG'] == 'TRUE'
+DEBUG = os.environ.get('DJANGO_DEBUG','') == 'TRUE'
 
 ALLOWED_HOSTS = []
 
@@ -167,7 +167,7 @@ LOGIN_REDIRECT_URL = "/"
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = os.environ['SECURE_SSL_REDIRECT'] != 'FALSE'
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', '') != 'FALSE'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Activate Django-Heroku.
