@@ -58,20 +58,20 @@ class RegisterTest(TestCase):
     # Test Login without activation
     def test_correct_registration(self):
         c = Client(HTTP_HOST='example.com')
-        response = c.post('/register/', {'username': 'testuser', 'email': 'testuser@gmail.com', 'password1': '!Password1', 'password2': '!Password1'})
+        response = c.post('/register/', {'username': 'testuser', 'email': 'testuser@gmail.com', 'password1': '!Password1', 'password2': '!Password1'}, secure=True)
         logged_in = c.login(username='testuser', password='!Password1')
         self.assertFalse(logged_in)
 
     # Test Non-Matching Password Causing Non-Redirect
     def test_nonmatching_passwords(self):
         c = Client()
-        response = c.post('/register/', {'username': 'testuser', 'email': 'testuser@gmail.com', 'password1': '!Password1', 'password2': 'wrong'})
+        response = c.post('/register/', {'username': 'testuser', 'email': 'testuser@gmail.com', 'password1': '!Password1', 'password2': 'wrong'}, secure=True)
         self.assertEquals(response.status_code, 200)
 
     # Test Improper Email Causing Non-Redirect
     def test_improper_email(self):
         c = Client()
-        response = c.post('/register/', {'username': 'testuser', 'email': 'wrong', 'password1': '!Password1', 'password2': '!Password1'})
+        response = c.post('/register/', {'username': 'testuser', 'email': 'wrong', 'password1': '!Password1', 'password2': '!Password1'}, secure=True)
         self.assertEquals(response.status_code, 200)
 
 
@@ -190,7 +190,7 @@ class LeaderboardTest(TestCase):
         c = Client()
         c.login( username = 'testuser', password = '!Password1' )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "week", "all" ] ) )
+            "Running", "calories", "week", "all" ] ), secure=True )
         self.assertEquals( response.status_code, 200 )
 
 
@@ -206,7 +206,7 @@ class LeaderboardTest(TestCase):
         c = Client()
         c.login( username = 'testuser', password = '!Password1' )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "week", "all" ] ) )
+            "Running", "calories", "week", "all" ] ), secure=True )
         entry_list = response.context['entry_list']
         self.assertEquals( entry_list[0]['total_cals'], 1450 )
 
@@ -227,17 +227,17 @@ class LeaderboardTest(TestCase):
         c.login( username = 'testuser', password = '!Password1' )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "month", "all" ] ) )
+            "Running", "calories", "month", "all" ] ), secure=True )
         entry_list_month = response.context['entry_list']
         self.assertEquals( entry_list_month[0]['total_cals'], 2050 )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "week", "all" ] ) )
+            "Running", "calories", "week", "all" ] ), secure=True )
         entry_list_week = response.context['entry_list']
         self.assertEquals( entry_list_week[0]['total_cals'], 1450 )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard', args=[
-            "Running", "calories", "day", "all" ] ) )
+            "Running", "calories", "day", "all" ] ), secure=True )
         entry_list_week = response.context['entry_list']
         self.assertEquals( entry_list_week[0]['total_cals'], 1000 )
 
@@ -262,13 +262,13 @@ class LeaderboardTest(TestCase):
         # Sort by calories
         c.login( username = 'testuser', password = "!Password1" )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "calories", "week", "all"] ) )
+                                  args=["Running", "calories", "week", "all"] ), secure=True )
         entry_list = response.context['entry_list']
         self.assertTrue( entry_list[0]['username'] == "testuser" )
         self.assertTrue( entry_list[1]['username'] == "testuser2" )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "duration_hours", "week", "all"] ) )
+                                  args=["Running", "duration_hours", "week", "all"] ), secure=True )
         # Sort by hours
         entry_list_hours = response.context['entry_list']
         self.assertTrue( entry_list_hours[0]['username'] == "testuser2" )
@@ -302,7 +302,7 @@ class LeaderboardTest(TestCase):
         # Sort by calories
         c.login( username = 'testuser', password = "!Password1" )
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "calories", "week", "all"] ) )
+                                  args=["Running", "calories", "week", "all"] ), secure=True )
         entry_list = response.context['entry_list']
         self.assertTrue( entry_list[0]['username'] == "testuser3" )
         self.assertTrue( entry_list[1]['username'] == "testuser" )
@@ -310,7 +310,7 @@ class LeaderboardTest(TestCase):
         self.assertTrue( entry_list[3]['username'] == "testuser4" )
 
         response = c.get( reverse( 'hoosactive:exercise_leaderboard',
-                                  args=["Running", "duration_hours", "week", "all"] ) )
+                                  args=["Running", "duration_hours", "week", "all"] ), secure=True )
         # Sort by hours
         entry_list_hours = response.context['entry_list']
         self.assertTrue( entry_list_hours[0]['username'] == "testuser3" )
@@ -354,3 +354,20 @@ class WorkoutScheduleTest(TestCase):
         workout_string2 = workout2.user.username + " Scheduled Exercise for " + workout2.date.strftime("%m/%d/%Y")
         self.assertEquals( workout_string1, "testuser Scheduled Exercise for 05/01/2021" )
         self.assertEquals( workout_string2, "testuser Scheduled Exercise for 05/02/2021" )
+
+
+class FriendRequestTest(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        user = User.objects.create(username='testuser')
+        user.set_password('!Password1')
+        user.save()
+        user2 = User.objects.create(username='testuser2')
+        user2.set_password('!Password1')
+        user2.save()
+
+    def test_friend_request_accept(self):
+        User = get_user_model()
+        user = User.objects.get( username='testuser' )
+        user2 = User.objects.get( username='testuser2' )
+
