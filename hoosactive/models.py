@@ -23,6 +23,14 @@ class ProfileManager(models.Manager):
                     weight_lbs=we,bio_text=bio,city=ci,state=st,show_stats=ss, receive_notifications=rn)
         return profile
 
+STATE_CHOICES = [ ['', 'State'],
+    ['AL','AL'],['AK','AK'],['AZ','AZ'],['AR','AR'],['CA','CA'],['CO','CO'],['CT','CT'],['DE','DE'],['FL','FL'],['GA','GA'],
+    ['HI','HI'],['ID','ID'],['IL','IL'],['IN','IN'],['IA','IA'],['KS','KS'],['KY','KY'],['LA','LA'],['ME','ME'],['MD','MD'],
+    ['MA','MA'],['MI','MI'],['MN','MN'],['MS','MS'],['MO','MO'],['MT','MT'],['NE','NE'],['NV','NV'],['NH','NH'],['NJ','NJ'],
+    ['NM','NM'],['NY','NY'],['NC','NC'],['ND','ND'],['OH','OH'],['OK','OK'],['OR','OR'],['PA','PA'],['RI','RI'],['SC','SC'],
+    ['SD','SD'],['TN','TN'],['TX','TX'],['UT','UT'],['VT','VT'],['VA','VA'],['WA','WA'],['WV','WV'],['WI','WI'],['WY','WY'],
+]
+
 class Profile(models.Model):
     # One-To-One Relationship with User Model
     user = models.OneToOneField(User,
@@ -49,7 +57,7 @@ class Profile(models.Model):
     # City
     city = models.CharField(max_length=50)
     # State
-    state = models.CharField(max_length=2)
+    state = models.CharField(max_length=2, choices=STATE_CHOICES)
 
     # Toggles whether stats are shown or not
     show_stats = models.BooleanField(default=True)
