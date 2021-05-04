@@ -16,8 +16,6 @@
 						{% csrf_token %}
 						<h1 style="color: white">Enter Bio:</h1>
 						<div class="input-group mb-2">
-							<div class="input-group-append">
-							</div>
 							{{form.bio_text}}
 						</div>
 						<div class="input-group mb-2">
@@ -49,23 +47,31 @@
 								<span class="input-group-text"></span>
 							</div>
 							{{form.city}}
-						</div>
-						<div class="input-group mb-2">
-							<div class="input-group-append">
-								<span class="input-group-text"></span>
-							</div>
 							{{form.state}}
 						</div>
 						<div class="input-group mb-2">
-							<div class="input-group-append">
-								<p style="color: white;">Do you want your stats to be public?</p>
+							<div class="container">
+								<div class="row">
+									<div class="input-group-append col-9">
+										<p style="color: white;">Make your stats public?</p>
+									</div>
+									<div class="col-3">
+										{{form.show_stats}}
+									</div>
+								</div>
 							</div>
-							{{form.show_stats}}
+						</div>
 						<div class="input-group mb-2">
-							<div class="input-group-append">
-								<p style="color: white;">Would you like to receive email notifications?</p>
+							<div class="container">
+								<div class="row">
+									<div class="input-group-append col-9">
+										<p style="color: white;">Receive email notifications?</p>
+									</div>
+									<div class="col-3">
+										{{form.receive_notifications}}
+									</div>
+								</div>
 							</div>
-							{{form.receive_notifications}}
 						</div>
 				   		<div class="d-flex justify-content-center mt-3 login_container">
 				 			<input class="btn login_btn" type="submit" value="{% if user.profile %}Save Changes{% else %}Create Profile{% endif%}">
@@ -86,7 +92,7 @@
 		form_fields[3].defaultValue='{{user.profile.height_inches}}';
 		form_fields[4].defaultValue='{{user.profile.weight_lbs}}';
 		form_fields[5].defaultValue='{{user.profile.city}}';
-		form_fields[6].defaultValue='{{user.profile.state}}';
+		document.querySelector("option[value='{{user.profile.state}}']").selected = true;
 		if ('{{user.profile.show_stats}}'=='True') {form_fields[7].checked = true;}
 		else {form_fields[7].checked = false;}
 		if ('{{user.profile.receive_notifications}}'=='True') {form_fields[8].checked = true;}
@@ -97,7 +103,6 @@
 	form_fields[3].placeholder='Height (inches)...';
 	form_fields[4].placeholder='Weight (lbs)...';
 	form_fields[5].placeholder='City...';
-	form_fields[6].placeholder='State...';
 
 	for (var field in form_fields) {
       form_fields[field].className += ' form-control'
