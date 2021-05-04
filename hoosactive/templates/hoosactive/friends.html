@@ -16,7 +16,7 @@
     {% if show_requests is True %}
     <div class="col">
         <button style="font-size: 18px; float: right;" class="col-5 mt-2 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#FriendRequestsModal">
-          Friend Requests 
+          Friend Requests
           {% if request_count > 0 %}
           <span class="badge badge-success">{{request_count}}</span>
           {% endif %}
@@ -25,19 +25,20 @@
     {% endif %}
 </div>
 
-
-<!-- Example Friends Buttons -->
-{% for friend in friends_list %}
-<a href="/profile/{{ friend.username }}/" style="text-decoration: none !important;">
-  <button class="btn-light mx-auto m-2 row col-8 p-3" style="border-color: transparent; outline: none; border-radius: 12px;">
-      <div style="border-radius: 50%; width: 75px; height: 75px; overflow: hidden;">
-        <img src="{{friend.profile.profile_pic.url}}" width=75>
-      </div>
-      <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.username }}</p>
-      <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.profile.city }}, {{ friend.profile.state }}</p>
-  </button>
-</a>
-{% endfor %}
+<div class="mx-auto col-8">
+  <div style="text-align: center; margin-bottom: 20px;" class="h1 font-weight-bold">Friends</div>
+  {% for friend in friends_list %}
+  <a href="/profile/{{ friend.username }}/" style="text-decoration: none !important; width: 100%;">
+    <button class="btn-light m-2 row p-3" style="width: 100%; border-color: transparent; outline: none; border-radius: 12px;">
+        <div style="border-radius: 50%; width: 75px; height: 75px; overflow: hidden;">
+          <img src="{{friend.profile.profile_pic.url}}" width=75>
+        </div>
+        <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.username }}</p>
+        <p style="font-size: 20px" class="col mx-auto my-auto">{{ friend.profile.city }}, {{ friend.profile.state }}</p>
+    </button>
+  </a>
+  {% endfor %}
+</div>
 
 
 <!-- Friend Request Modal -->
