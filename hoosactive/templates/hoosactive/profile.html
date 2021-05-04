@@ -4,9 +4,8 @@
 <body style="background-color: #EEEEEE;">
   <div style="height: 100%; text-align: center;">
     {% if user.is_authenticated %}
-    <br></br>
-    <div class="row no-gutters">
-      <div class="col mt-5">
+    <div class="profile-col-container no-gutters">
+      <div id="col1" class="mt-5 profile-col-flip">
 
         <!-- This is a chart. -->
         <div style="width: 100%;">
@@ -46,7 +45,7 @@
 
       </div>
 
-      <div class="col mt-5">
+      <div id="col2" class="mt-5 profile-col-flip">
         <div class="mx-auto" style="border-radius: 50%; width: 200px; height: 200px; overflow: hidden;">
           <img src="{{profile_user.profile.profile_pic.url}}" width=200>
         </div>
