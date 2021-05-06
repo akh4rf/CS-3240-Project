@@ -8,13 +8,15 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
+TYPE_CHOICES = [ ['SpeedCardio','SpeedCardio'], ['DistanceCardio','DistanceCardio'], ['Bodyweight','Bodyweight'] ]
+
 class Exercise(models.Model):
     # Exercise name
     name = models.CharField(max_length=100)
     # Exercise description
     description = models.TextField()
     # Exercise type
-    type = models.CharField(max_length=100, default="")
+    type = models.CharField(max_length=100, default="", choices=TYPE_CHOICES)
 
     def __str__(self):
         return self.name
@@ -81,7 +83,7 @@ class Profile(models.Model):
             exercise = Exercise.objects.get(name=exercise_name)
             self.exercises.add(exercise)
     def get_recent_entries(self):
-        return self.user.entry_set.all().order_by('date')[:5]
+        return self.user.entry_set.all().order_by('-date')[:5]
     def get_upcoming_workouts(self):
         return self.user.workout_set.filter(date__gt=timezone.now()).order_by('date')[:5]
     def update_city(self):
