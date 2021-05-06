@@ -61,7 +61,8 @@ def log_exercise(request, redir):
                 duration = min(99.99, duration)
 
                 # extra data
-                extra_data = request.POST['extra']
+                extra_data = max(0.00, round(float(request.POST['extra']),2))
+                extra_data = min(99.99, extra_data)
 
                 entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],calories_burned,duration,extra_data)
                 return redirect('hoosactive:'+redir)
