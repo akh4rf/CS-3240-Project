@@ -395,7 +395,7 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
 
     extra_column_dict = {
         'SpeedCardio': 'Avg Mile Time',
-        'DistanceCardio': 'Total Dist (Miles)',
+        'DistanceCardio': 'Distance (Miles)',
         'Bodyweight': 'Total Reps'
     }
 
@@ -450,7 +450,10 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
             total_extra=Round0(Sum('extra')),
         )
 
-    entry_list = entry_list.order_by('-'+sortdict[sort])
+    if ((exercise.type=="SpeedCardio") and sort=="extra"):
+        entry_list = entry_list.order_by(sortdict[sort])
+    else:
+        entry_list = entry_list.order_by('-'+sortdict[sort])
 
     return render(request, 'hoosactive/leaderboard.html', {
         'entry_list': entry_list,
