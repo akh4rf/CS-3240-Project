@@ -94,9 +94,9 @@
 		form_fields[5].defaultValue='{{user.profile.city}}';
 		document.querySelector("option[value='{{user.profile.state}}']").selected = true;
 		if ('{{user.profile.show_stats}}'=='True') {form_fields[7].checked = true;}
-		else {form_fields[7].checked = false;}
+		else {form_fields[6].checked = false;}
 		if ('{{user.profile.receive_notifications}}'=='True') {form_fields[8].checked = true;}
-		else {form_fields[8].checked = false;}
+		else {form_fields[7].checked = false;}
 	}
 	form_fields[1].placeholder='Age...';
 	form_fields[2].placeholder='Height (ft)...';

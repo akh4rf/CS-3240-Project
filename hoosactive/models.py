@@ -13,6 +13,8 @@ class Exercise(models.Model):
     name = models.CharField(max_length=100)
     # Exercise description
     description = models.TextField()
+    # Exercise type
+    type = models.CharField(max_length=100, default="")
 
     def __str__(self):
         return self.name
@@ -91,10 +93,9 @@ class Profile(models.Model):
     def requested_by(self, user):
         return (user in self.friend_requests.all())
 
-
 class EntryManager(models.Manager):
-    def create_entry(self, us, un, ci, ex, dt, cal, dur):
-        entry = self.create(user=us,username=un,city=ci,exercise=ex,date=dt,calories=cal,duration_hours=dur)
+    def create_entry(self, us, un, ci, ex, dt, cal, dur, extra):
+        entry = self.create(user=us,username=un,city=ci,exercise=ex,date=dt,calories=cal,duration_hours=dur,extra=extra)
         if not us.profile.does_exercise(ex):
             us.profile.add_exercise(ex)
         return entry
@@ -114,6 +115,8 @@ class Entry(models.Model):
     calories = models.PositiveSmallIntegerField()
     # Duration of exercise
     duration_hours = models.DecimalField(decimal_places=2,max_digits=4)
+    # Extra data field
+    extra = models.DecimalField(decimal_places=2,max_digits=4)
 
     objects = EntryManager()
 
@@ -137,13 +140,3 @@ class Workout(models.Model):
 
     def __str__(self):
         return self.user.username + " Scheduled Exercise For " + self.date.strftime("%m/%d/%Y")
-
-class RunningEntry(Entry):
-    # Distance Ran
-    distance_miles = models.DecimalField(decimal_places=2,max_digits=5)
-    # Average Speed
-    average_speed = models.DecimalField(decimal_places=2,max_digits=4)
-
-class PushUpsEntry(Entry):
-    # Repetitions
-    reps = models.PositiveSmallIntegerField()
