@@ -2,63 +2,79 @@
 {% block content %}
 {% load static %}
 
-<div class="">
-  <div style="position: absolute;" class = "triangle-up rectangle"></div>
-  <img style="position: absolute; right: 0;" src="{% static 'hoosactive/images/trophies.png' %}" alt="">
-  {% if user.is_authenticated %}
+<div style="overflow: hidden; height: 700px;">
+  <div style="position: absolute; height: 700px; width: 100%;">
+    <div style="overflow: hidden; position: relative; height: 700px; width: 100%;">
+      <div style="position: absolute;" class = "triangle-up rectangle"></div>
+    </div>
+  </div>
+  <div style="position: absolute; width: 100%;">
+    <div class="index-trophies"><img src="{% static 'hoosactive/images/trophies.png' %}" alt=""></div>
+    <div class="index-content">
+      <div style="width: 58.333333%;">
+        <div>
+          {% if user.is_authenticated %}
 
-  {% if user.first_name %}
-  <div class="col-6 mx-5 text-white h1">Welcome, {{ user.first_name }}!</div>
-  {% else %}
-  <div class="col-6 mx-5 text-white h1">Welcome, {{ user.username }}!</div>
-  {% endif %}
+          {% if user.first_name %}
+          <div class="text-white h1">Welcome, {{ user.first_name }}!</div>
+          {% else %}
+          <div class="text-white h1">Welcome, {{ user.username }}!</div>
+          {% endif %}
 
-  {% if user.profile %}
-  <!-- Button meant to open Modal to adding exercise. -->
-  <button style="font-size: 25px;" class="bi bi-plus-circle col-7 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#AddExerciseModal"> ADD EXERCISE </button>
-  {% else %}
-  <a href="/profile/{{ request.user.username }}/create/"><button style="font-size: 25px;" class="bi bi-plus-circle col-7 mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold"> ADD EXERCISE </button></a>
-  <!-- Modal in base.html -->
-  {% endif %}
+          {% if user.profile %}
+          <!-- Button meant to open Modal to adding exercise. -->
+          <button style="font-size: 25px; width: 100%;" class="bi bi-plus-circle mt-5 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#AddExerciseModal"> ADD EXERCISE </button>
+          {% else %}
+          <a href="/profile/{{ request.user.username }}/create/">
+            <button style="font-size: 25px; width: 100%;" class="bi bi-plus-circle mt-5 mx-5 p-3 btn btn-outline-primary font-weight-bold"> ADD EXERCISE </button>
+          </a>
+          <!-- Modal in base.html -->
+          {% endif %}
 
-  {% if user.profile %}
-  <!-- Button meant to direct to workout scheduler. -->
-  <button style="font-size: 25px;" class="bi bi-calendar-date col-7 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#ScheduleWorkoutModal"> SCHEDULE WORKOUT </button>
-  {% else %}
-  <a href="/profile/{{ request.user.username }}/create/"><button style="font-size: 25px;" class="bi bi-calendar-date col-7 mt-4 mx-5 mb-3 p-3 btn btn-outline-primary font-weight-bold"> SCHEDULE WORKOUT </button></a>
-  <!-- Modal in base.html -->
-  {% endif %}
+          {% if user.profile %}
+          <!-- Button meant to direct to workout scheduler. -->
+          <button style="font-size: 25px; width: 100%;" class="bi bi-calendar-date mt-4 mb-3 p-3 btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#ScheduleWorkoutModal"> SCHEDULE WORKOUT </button>
+          {% else %}
+          <a href="/profile/{{ request.user.username }}/create/">
+            <button style="font-size: 25px; width: 100%;" class="bi bi-calendar-date mt-4 mb-3 p-3 btn btn-outline-primary font-weight-bold"> SCHEDULE WORKOUT </button>
+          </a>
+          <!-- Modal in base.html -->
+          {% endif %}
+          <!-- This table is meant to have the user's 5 soonest upcoming scheduled workouts. If you click on one, you can edit it. -->
+          <table class="table table-dark table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Upcoming Workout</th>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for workout in workout_list %}
+              <tr>
+                <td>{{ workout.desc }}</td>
+                <td>{{ workout.date|date:"SHORT_DATE_FORMAT" }}</td>
+                <td>{{ workout.date|date:"g" }}:{{ workout.date|date:"i" }} {{ workout.date|date:"A" }}</td>
+              </tr>
+              {% endfor %}
+              {% for blank in workout_blank %}
+              <tr>
+                <td>⠀</td>
+                <td>⠀</td>
+                <td>⠀</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Sign up today to see Hoos Active!</div>
+          <a style="position: absolute; margin: 300px 25px 0px 100px;" class="btn btn-secondary" href="{% url 'hoosactive:login' %}">SIGN UP FOR HOOSACTIVE</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 
-  <!-- This table is meant to have the user's 5 soonest upcoming scheduled workouts. If you click on one, you can edit it. -->
-  <table class="col-7 table table-dark table-hover m-3 mx-5">
-    <thead>
-      <tr>
-        <th scope="col">Upcoming Workout</th>
-        <th scope="col">Date</th>
-        <th scope="col">Time</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for workout in workout_list %}
-      <tr>
-        <td>{{ workout.desc }}</td>
-        <td>{{ workout.date|date:"SHORT_DATE_FORMAT" }}</td>
-        <td>{{ workout.date|date:"g" }}:{{ workout.date|date:"i" }} {{ workout.date|date:"A" }}</td>
-      </tr>
-      {% endfor %}
-      {% for blank in workout_blank %}
-      <tr>
-        <td>⠀</td>
-        <td>⠀</td>
-        <td>⠀</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div style="position: absolute; margin: 100px 25px 0px 50px;" class="text-white h1">Sign up today to see Hoos Active!</div>
-  <a style="position: absolute; margin: 300px 25px 0px 100px;" class="btn btn-secondary" href="{% url 'hoosactive:login' %}">SIGN UP FOR HOOSACTIVE</a>
-  {% endif %}
+  </div>
 </div>
 
 <!-- Add Exercise Modal -->

@@ -128,6 +128,7 @@ def activate(request, uidb64, token):
 
     return redirect('hoosactive:index')
 
+#https://www.youtube.com/watch?v=tUqUdu0Sjyc used the following toutrial for login and parts of registration
 def login(request):
     if request.user.is_authenticated:
         return redirect('hoosactive:index')

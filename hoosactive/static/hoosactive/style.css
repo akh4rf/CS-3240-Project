@@ -25,9 +25,32 @@ div {
 }
 
 .b12-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1E355D;
+  padding: 20px 10px;
+}
+
+.b12-navbar-links {
+  display: flex;
+  width: 600px;
+}
+
+.index-trophies {
+  position: absolute;
+  right: 0;
+}
+
+.index-content {
   width: 100%;
-  height: 100px;
-  background: black;
+  position: absolute;
+}
+
+.index-content > div > div {
+  display: flex;
+  flex-direction: column;
+  margin-left: 3rem;
 }
 
 .rectangle {
@@ -144,4 +167,43 @@ li {
 
 .b12-nav-item:hover #SignOutNavBtn {
   color: #FF9E3A;
+}
+
+.profile-col-flip {
+  -ms-flex-preferred-size: 0;
+  flex-basis: 0;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  max-width: 100%; }
+  #col1.profile-col-flip {order: 1;}
+  #col2.profile-col-flip {order: 2;
+}
+
+.profile-col-container {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 840px) {
+  .b12-navbar {
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .b12-navbar-links {text-align: center;}
+
+  .blank {display: none;}
+
+  .index-trophies {display: none;}
+  .index-content {justify-content: center; display: flex;}
+  .index-content > div > div {align-items: center; margin: 0;}
+
+  .profile-col-container {
+    flex-direction: column;
+  }
+
+  #col1.profile-col-flip {order: 2 !important;}
+  #col2.profile-col-flip {order: 1 !important;}
 }
