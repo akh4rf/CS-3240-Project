@@ -5,7 +5,7 @@ from django.db.models import Count
 # Register your models here.
 
 class entryAdmin( admin.ModelAdmin ):
-    list_display = ( 'user', 'city', 'exercise', 'date', 'calories', 'duration_hours' )
+    list_display = ( 'user', 'city', 'exercise', 'date', 'calories', 'duration_hours', 'extra' )
 
 class workoutAdmin( admin.ModelAdmin ):
     list_display = ( 'user', 'desc', 'date' )
@@ -26,9 +26,11 @@ class profileAdmin( admin.ModelAdmin ):
             _number_of_friend_requests=Count( 'friend_requests', distinct=True )
         )
         return queryset
-        
+
+class exerciseAdmin( admin.ModelAdmin ):
+    list_display = ( 'name', 'type', )
 
 admin.site.register(Profile, profileAdmin)
-admin.site.register(Exercise)
+admin.site.register(Exercise, exerciseAdmin)
 admin.site.register(Entry, entryAdmin)
 admin.site.register(Workout, workoutAdmin)

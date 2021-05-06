@@ -41,6 +41,9 @@
               <div style="padding: 10px;">
                 <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/duration_hours/{{ timeframe }}/{{ population }}/">Total Hours</a>
               </div>
+              <div style="padding: 10px;">
+                <a style="font-size: 24px;" class="btn login_btn" href="/leaderboard/{{ exercise.name }}/extra/{{ timeframe }}/{{ population }}/">{{ extra_col_title }}</a>
+              </div>
               {% endif %}
           </div>
           <div style="color: black; background-color: white; margin: 20px 0;">
@@ -76,10 +79,15 @@
         <div style="float: left; font-size: 24px; width: 100%;">
           <div class="bg-blue" style="color: white; padding: 10px;">
             <div class="leaderboard-flex-table">
+              {% if exercise %}
               <div>Username</div>
               <div>Location</div>
               <div>Calories Burned</div>
               <div>Total Hours</div>
+              <div>{{ extra_col_title }}</div>
+              {% else %}
+              <div>​</div>
+              {% endif %}
             </div>
           </div>
           {% for entry in entry_list %}
@@ -89,6 +97,7 @@
               <div>{{ entry.city }}</div>
               <div>{{ entry.total_cals }}</div>
               <div>{{ entry.total_time }}</div>
+              <div>{{ entry.total_extra }}</div>
             </div>
           </div>
           {% endfor %}

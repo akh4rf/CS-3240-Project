@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Avg, Func
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render,redirect
 from django.utils import timezone
@@ -57,10 +57,13 @@ def log_exercise(request, redir):
                 calories_burned = min(9999, calories_burned)
 
                 # duration min/max
-                duration = max(0.00, round(float(request.POST['duration'])),2)
-                duration = min(99.99, round(float(request.POST['duration'])),2)
+                duration = max(0.00, round(float(request.POST['duration']),2))
+                duration = min(99.99, duration)
 
-                entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],calories_burned,duration)
+                # extra data
+                extra_data = request.POST['extra']
+
+                entry = Entry.objects.create_entry(user,user.username,user.profile.city,exer,request.POST['date'],calories_burned,duration,extra_data)
                 return redirect('hoosactive:'+redir)
     else:
         return redirect('hoosactive:login')
@@ -87,7 +90,10 @@ def register(request):
                 check_user = User.objects.filter(email=check_email)
                 if len( check_user ) > 0:
                     messages.add_message(request, messages.WARNING, 'This email or username has already been registered to another user')
-                    return render(request, 'hoosactive/register.html',{'form': form})
+                    return render(request, 'hoosactive/register.html',{
+                        'form': form,
+                        'redirect': 'index',
+                    })
 
                 user = form.save()
                 user.is_active = False
@@ -103,7 +109,10 @@ def register(request):
 
                 return redirect('hoosactive:login')
 
-        return render(request, 'hoosactive/register.html', {'form': form})
+        return render(request, 'hoosactive/register.html', {
+            'form': form,
+            'redirect': 'index',
+        })
 
 def activate(request, uidb64, token):
     try:
@@ -118,9 +127,9 @@ def activate(request, uidb64, token):
         user.save()
         # Send Welcome Email
         subj = "Welcome to HoosActive!"
-        message = ( "Hey " + user.username + "!" + 
-                  "\n\nWelcome to the fastest growing health and fitness platform in Charlottesville! " + 
-                  "We look forward to seeing the progress you make toward achieving your goals! " + 
+        message = ( "Hey " + user.username + "!" +
+                  "\n\nWelcome to the fastest growing health and fitness platform in Charlottesville! " +
+                  "We look forward to seeing the progress you make toward achieving your goals! " +
                   "\n\nHappy Workouts!\nThe HoosActive Team" )
         send_mail( subj, message, EMAIL_HOST_USER, [user.email] )
     else:
@@ -144,7 +153,9 @@ def login(request):
             else:
                 messages.info(request, 'Username OR password is incorrect, make sure your email is activated')
 
-        return render(request, 'hoosactive/login.html', {})
+        return render(request, 'hoosactive/login.html', {
+            'redirect': 'index',
+        })
 
 def profile_noname(request):
     return HttpResponseRedirect('/profile/'+request.user.username)
@@ -240,6 +251,7 @@ def friends_error(request, username, error):
             return render(request, "hoosactive/friends.html", {
                 'error_message': error_message,
                 'friends_list': profile_user.profile.friends.all(),
+                'redirect': 'index',
                 'request_count': profile_user.profile.friend_requests.count(),
                 'request_list': authenticated_user.profile.friend_requests.all(),
                 'show_requests': (authenticated_user == profile_user),
@@ -265,8 +277,8 @@ def send_request(request, username, user2):
                     # Send Email to requested friend if notifications are on
                     if ( prof.receive_notifications is True ):
                         subj = "New Friend Request Received!"
-                        message = ( "Hey " + recipient.username + "!" + 
-                                  "\n\nYou have received a new friend request from " + sender.username + 
+                        message = ( "Hey " + recipient.username + "!" +
+                                  "\n\nYou have received a new friend request from " + sender.username +
                                   "! Check out their profile at: " + request.META['HTTP_HOST'] + '/profile/' + sender.username + "/" +
                                   "\n\nHappy Workouts!\nThe HoosActive Team" )
                         send_mail( subj, message, EMAIL_HOST_USER, [recipient.email] )
@@ -297,7 +309,7 @@ def request_response(request, username, user2, action):
                     # Send Email to the requesting user if notifications are on
                     if ( prof.receive_notifications is True ):
                         subj = responding_user.username + " Accepted Your Friend Request!"
-                        message = ( "Hey " + requesting_user.username + "!" + 
+                        message = ( "Hey " + requesting_user.username + "!" +
                                    "\n\n" + responding_user.username + " has accepted you friend request!" +
                                   "! Add more frineds at: " + request.META['HTTP_HOST'] + '/profile/' + requesting_user.username + "/friends/"
                                   "\n\nHappy Workouts!\nThe HoosActive Team" )
@@ -352,14 +364,17 @@ def create(request, username):
                     Profile.objects.get(user=user).update_city()
                 return HttpResponseRedirect('/profile/'+request.user.username)
 
-        return render(request, 'hoosactive/create.html', {'form': form})
+        return render(request, 'hoosactive/create.html', {
+            'form': form,
+            'redirect': 'index',
+        })
     else:
         return redirect('hoosactive:login')
-
 
 def leaderboard(request):
     return render(request, 'hoosactive/leaderboard.html', {
         'exercise_list': Exercise.objects.order_by('name'),
+        'redirect': 'index',
         'timeframe': 'day'
     })
 
@@ -375,7 +390,14 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
 
     sortdict = {
         'duration_hours': 'total_time',
-        'calories': 'total_cals'
+        'calories': 'total_cals',
+        'extra': 'total_extra'
+    }
+
+    extra_column_dict = {
+        'SpeedCardio': 'Avg Mile Time',
+        'DistanceCardio': 'Distance (Miles)',
+        'Bodyweight': 'Total Reps'
     }
 
     friends_list = [request.user]
@@ -397,17 +419,49 @@ def exercise_leaderboard(request, exercise_name, sort, timeframe, population):
     ).values(
         'username',
         'city'
-    ).annotate(
-        total_cals=Sum('calories'),
-        total_time=Sum('duration_hours'),
-    ).order_by(
-        '-'+sortdict[sort]
     )
 
+    class Round0(Func):
+        function = "ROUND"
+        template = "%(function)s(%(expressions)s::numeric, 0)"
+
+    class Round2(Func):
+        function = "ROUND"
+        template = "%(function)s(%(expressions)s::numeric, 2)"
+
+    if (exercise.type=="SpeedCardio"):
+
+        entry_list = entry_list.annotate(
+            total_cals=Sum('calories'),
+            total_time=Sum('duration_hours'),
+            total_extra=Round2(Avg('extra')),
+        )
+    elif (exercise.type=="DistanceCardio"):
+
+        entry_list = entry_list.annotate(
+            total_cals=Sum('calories'),
+            total_time=Sum('duration_hours'),
+            total_extra=Round2(Sum('extra')),
+        )
+    elif (exercise.type=="Bodyweight"):
+
+        entry_list = entry_list.annotate(
+            total_cals=Sum('calories'),
+            total_time=Sum('duration_hours'),
+            total_extra=Round0(Sum('extra')),
+        )
+
+    if ((exercise.type=="SpeedCardio") and sort=="extra"):
+        entry_list = entry_list.order_by(sortdict[sort])
+    else:
+        entry_list = entry_list.order_by('-'+sortdict[sort])
+
     return render(request, 'hoosactive/leaderboard.html', {
+        'entry_list': entry_list,
         'exercise_list': Exercise.objects.order_by('name'),
         'exercise': exercise,
-        'entry_list': entry_list,
+        'extra_col_title': extra_column_dict[exercise.type],
+        'redirect': 'index',
         'timeframe': timeframe,
         'population': population
     })
@@ -430,7 +484,7 @@ def search(request):
 def password_reset(request):
     if request.method == "POST":
         form = UserForgotPasswordForm(request.POST)
-        if form.is_valid(): 
+        if form.is_valid():
             email = request.POST.get('email')
             qs = User.objects.filter(email=email)
 
@@ -450,8 +504,14 @@ def password_reset(request):
             messages.add_message(request, messages.SUCCESS, 'Email submitted. If your email is registered you should receive an email shortly')
         else:
             messages.add_message(request, messages.WARNING, 'Email not submitted. Check email syntax')
-            return render(request, 'password/reset.html', {'form': form})
-    return render(request, 'password/reset.html', {'form': UserForgotPasswordForm, } )
+            return render(request, 'password/reset.html', {
+                'form': form,
+                'redirect': 'index',
+            })
+    return render(request, 'password/reset.html', {
+        'form': UserForgotPasswordForm,
+        'redirect': 'index',
+    })
 
 def password_change(request, uidb64, token):
     if request.method == 'POST':
@@ -475,6 +535,7 @@ def password_change(request, uidb64, token):
             else:
                 context = {
                     'form': form,
+                    'redirect': 'index',
                     'uid': uidb64,
                     'token': token
                 }
@@ -494,6 +555,7 @@ def password_change(request, uidb64, token):
     if user is not None and password_reset_token.check_token(user, token):
         context = {
             'form': UserPasswordResetForm(user),
+            'redirect': 'index',
             'uid': uidb64,
             'token': token
         }

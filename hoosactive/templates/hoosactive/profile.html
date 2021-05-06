@@ -87,67 +87,6 @@
     {% endif %}
   </div>
 
-  <!-- Add Exercise Modal -->
-  <div id="AddExerciseModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Exercise</h5>
-        </div>
-        <div class="modal-body">
-          <form action="{% url 'hoosactive:log_exercise' redirect %}" method="post">
-            {% csrf_token %}
-            <select id="drop" name="drop" class="form-control" onchange="fillEntry()" required>
-              <option value="" selected disabled>Select Exercise Type</option>
-              {% for exercise in exercise_list %}
-              <option value="{{ exercise.name }}">{{ exercise.name }}</option>
-              {% endfor %}
-              <option value="" disabled>Recent Entries</option>
-              {% for entry in recent_entries %}
-              <option value="{{ entry.exercise.name }}" data-duration="{{ entry.duration_hours }}" data-calories="{{ entry.calories }}">{{ entry.exercise }} on {{ entry.date }}</option>
-              {% endfor %}
-            </select>
-            <label for="date">Timestamp</label>
-            <input class="my-2 form-control" type="datetime-local" name="date" id="date" required>
-            <label for="duration">Duration (hrs)</label>
-            <input class="my-2 form-control" type="number" placeholder="0.00" name="duration" id="duration" step="0.01" required>
-            <label for="calories_burned">Calories Burned</label>
-            <input class="my-2 form-control" type="number" placeholder="000" name="calories_burned" id="calories_burned" required>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <input type="submit" class="btn btn-primary" value="Log Exercise">
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Schedule Workout Modal -->
-  <div id="ScheduleWorkoutModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Schedule Workout</h5>
-        </div>
-        <div class="modal-body">
-          <form action="{% url 'hoosactive:schedule_workout' redirect %}" method="post">
-            {% csrf_token %}
-            <label for="description">Workout Name</label>
-            <input class="my-2 form-control" placeholder='e.g. "1-Mile Run"' name="description" id="description" required>
-            <label for="date">Timestamp</label>
-            <input class="my-2 form-control" type="datetime-local" name="date" id="date" required>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <input type="submit" class="btn btn-primary" value="Schedule">
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
   <div style="padding: 0 50px; margin-top: 50px;">
 
   <!-- Settings Modal -->
